@@ -511,3 +511,9 @@
 .tp-sound__links a small { color: #9a8f9f; font-size: 0.76rem; }
 .tp-sound__links a i { color: #ff4fbf; font-style: normal; font-weight: 900; }
 .tp-sound__links a:hover span { color: #ff4fbf; }
+
+/* selection bar stays in view while picking */
+.tp-enh__bar { position: sticky; bottom: 12px; z-index: 5; background: rgba(40, 10, 34, 0.96); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5); }
+@media (max-width: 767px) {
+  .tp-wave__flag--later:not(.tp-wave__flag--last) { display: none; }
+}
