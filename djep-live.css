@@ -18677,3 +18677,7 @@ a[href*="print_special"],
 .tp-slot--details .tp-pay__ring { width: 96px; height: 96px; }
 .tp-slot--details .tp-pay__pct { font-size: 1.45rem; }
 .tp-slot--details .tp-kicker { margin-bottom: 10px !important; }
+
+/* Payment ring: center the number and % inside the ring (2026-10-28) */
+.tp-pay__pct { align-items: center !important; }
+.tp-pay__pct small { align-self: center; margin-top: 2px !important; }
