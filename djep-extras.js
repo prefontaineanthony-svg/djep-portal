@@ -235,8 +235,36 @@
         ["Mixcloud", "https://www.mixcloud.com/TheTonyPre/"]
       ],
       website: "https://thetonypre.com/",
-      meeting: "https://calendly.com/thetonypre/meetme"
-    }
+      meeting: "https://calendly.com/thetonypre/meetme",
+      logo: "https://thetonypre.com/links/img/logo.png",
+      role: "DJ & Event Host",
+      tagline: "Your go-to for music, timeline and every big moment of the night.",
+      phone: "631 388 0143",
+      phoneLink: "+16313880143",
+      email: "anthony@thetonypre.com",
+      instagram: "thetonypre"
+    },
+    // Home "Add to your night" menu. Prices from DJEP > Add Ons (2026-10-28).
+    // price: null shows "Ask me". featured: shown before "Show all".
+    addons: [
+      { name: "Dancing on a Cloud", price: 500, note: "A low cloud rolls across the floor for your first dance", featured: true },
+      { name: "Cold Sparkler Fountains", price: 500, note: "Indoor-safe sparks for entrances and the last dance", featured: true },
+      { name: "CO2 Stationary Jets", price: 500, note: "Big cryo blasts right on the drop", featured: true },
+      { name: "CO2 Handheld Cannon", match: "CO2 Handheld Canon", price: 400, note: "I fire it into the crowd at peak moments", featured: true },
+      { name: "Motion Graphic Monogram", price: 350, note: "Your initials, animated in light", featured: true },
+      { name: "Wireless Color Uplighting", match: "Wireless Color Uplighting (20 Fixtures)", price: 900, from: true, note: "Wash the whole room in your colors", featured: true },
+      { name: "Premium Open Air Photobooth", price: 1250, note: "Studio-quality photos, unlimited sessions", featured: true },
+      { name: "Audio Guest Book", price: null, note: "Voice messages from your guests to keep forever", featured: true },
+      { name: "Intelligent Moving Heads", match: "Intelligent Moving Head (2 Fixtures)", price: 750, from: true, note: "Club-style moving lights over the dance floor" },
+      { name: "LED Dance Floor 360 Tubes", match: "LED Dance Floor 360 Tubes (4 Fixtures)", price: 300, from: true, note: "Glowing light tubes framing the floor" },
+      { name: "Dance Floor Wash", price: 250, note: "A color wash over the whole dance floor" },
+      { name: "Deluxe Social Booth", price: 750, note: "Instant shareable photos and boomerangs" },
+      { name: "A.I. Generation Photobooth", price: 1500, note: "AI-styled portraits your guests will talk about" },
+      { name: "Ceremony & Prelude Music", price: null, note: "Sound, mics and music for your ceremony" },
+      { name: "Satellite Speaker for Cocktail", price: 150, note: "Music for a separate cocktail space" },
+      { name: "Wireless Zone Speaker", price: 250, note: "Extra sound wherever guests gather" }
+    ],
+    addonDeadlineDays: 30 // matches the 30-day services deadline email
   };
 
   function fmtDate(d, long) {
@@ -273,8 +301,33 @@
         total: num(rowValue(doc, ".djep-totalfeebox", "total fee")),
         paid: Math.abs(num(rowValue(doc, ".djep-totalfeebox", "payments")) || 0),
         balance: num(rowValue(doc, ".djep-totalfeebox", "balance due")),
-        nextDue: null
+        nextDue: null,
+        type: rowValue(doc, ".djep-eventdescriptionbox", "event type"),
+        status: rowValue(doc, ".djep-eventdescriptionbox", "booking status"),
+        pkg: null,
+        items: [],
+        bookedOn: null
       };
+      // package + add-ons from Fee Details
+      var section = "";
+      qsa(".djep-feedetailsbox tr", doc).forEach(function (tr) {
+        var c = qsa("td", tr);
+        if (c.length < 2) return;
+        var name = txt(c[0]), priceTxt = txt(c[c.length - 1]);
+        if (!name || /^description$/i.test(name)) return;
+        if (/^packages?$/i.test(name) && num(priceTxt) == null) { section = "pkg"; return; }
+        if (/^add.?ons?$/i.test(name) && num(priceTxt) == null) { section = "add"; return; }
+        var p = num(priceTxt);
+        if (p != null && /-\s*\$/.test(priceTxt)) p = -p;
+        if (section === "pkg" && !info.pkg) info.pkg = { name: name, price: p };
+        else if (section === "add") info.items.push({ name: name, price: p });
+      });
+      // first payment = the day the date was secured
+      qsa(".djep-paymenthistorybox tr", doc).forEach(function (tr) {
+        var m = txt(tr).match(/(\d{1,2}\/\d{1,2}\/\d{4})/);
+        var d = m && parseDate(m[1]);
+        if (d && (!info.bookedOn || d < info.bookedOn)) info.bookedOn = d;
+      });
       // next scheduled payment, if DJEP lists one with a due date
       var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       qsa(".djep-paymentsfinancesbox tr, .djep-paymenthistorybox tr", doc).forEach(function (tr) {
@@ -478,6 +531,324 @@
     }).catch(function () {});
   }
 
+  // ======================================================================
+  // HOME DASHBOARD (2026-10-28): Your DJ hero + live countdown, the
+  // build-up waveform, key dates, enhancements. Inspired by the Marquee
+  // dashboard Tony liked, in the Tony Pre night look.
+  // ======================================================================
+  function todayStart() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function isPaidFull(info) { return !!(info && info.total > 0 && info.balance != null && info.balance <= 0.004); }
+  function eventStart(info) {
+    var d = new Date(info.date.getTime());
+    var m = String(info.start || "").match(/(\d{1,2}):(\d{2})\s*([AP]M)/i);
+    if (m) d.setHours((+m[1] % 12) + (/p/i.test(m[3]) ? 12 : 0), +m[2], 0, 0);
+    else d.setHours(17, 0, 0, 0);
+    return d;
+  }
+  function inDays(d) {
+    var n = daysUntil(d);
+    return n < 0 ? "Done" : n === 0 ? "Today" : n === 1 ? "Tomorrow" : "In " + n.toLocaleString("en-US") + " days";
+  }
+  function icon(name) {
+    var p = {
+      phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+      text: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+      ig: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>',
+      card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+      check: '<path d="M20 6 9 17l-5-5"/>'
+    }[name] || "";
+    return '<svg class="tp-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>';
+  }
+
+  // ---------------------------------------------------------- hero
+  function heroHtml(id, info) {
+    var d = info.date, dj = TP.dj, full = isPaidFull(info);
+    var eid = encodeURIComponent(id);
+    var payHref = "makeapayment.asp?action=choose_payment_gateway&eventid=" + eid;
+    var planHref = "planmyevent.asp?eventid=" + eid;
+    var detHref = "eventdetails.asp?eventid=" + eid;
+    var owe = !full && info.total > 0;
+    var next = owe && info.nextDue ? "Next: " + (info.nextDue.amount ? money(info.nextDue.amount) + " " : "") + "due " + fmtDate(info.nextDue.date) : owe ? money(Math.max(0, info.balance || 0)) + " balance" : "";
+    var actions = owe
+      ? '<a class="tp-hero__primary" href="' + payHref + '">' + icon("card") + '<span>Make a payment' + (next ? '<small>' + esc(next) + '</small>' : "") + '</span></a>' +
+        '<a class="tp-hero__ghost" href="' + planHref + '">Plan my event</a><a class="tp-hero__ghost" href="' + detHref + '">Event details</a>'
+      : '<a class="tp-hero__primary" href="' + planHref + '"><span>Plan my event<small>' + (full ? "Paid in full. Thank you!" : "Forms, music and timeline") + '</small></span></a>' +
+        '<a class="tp-hero__ghost" href="' + detHref + '">Event details</a><a class="tp-hero__ghost" href="' + payHref + '">Payments</a>';
+    var sub = [info.type, info.venue].filter(Boolean).join(" · ");
+    var status = info.status || "Booked";
+    return '<section class="tp-hero" aria-label="Your upcoming event">' +
+      '<div class="tp-hero__photo"><img src="' + esc(dj.photo) + '" alt="Tony Pre, your DJ"><span class="tp-hero__tag"><i></i>Your DJ</span></div>' +
+      '<div class="tp-hero__main">' +
+        '<div class="tp-hero__event">' +
+          '<div class="tp-datetile"><span class="tp-datetile__m">' + esc(d.toLocaleDateString("en-US", { month: "short" })) + '</span>' +
+          '<span class="tp-datetile__d">' + d.getDate() + '</span><span class="tp-datetile__y">' + d.getFullYear() + '</span>' +
+          '<span class="tp-datetile__w">' + esc(d.toLocaleDateString("en-US", { weekday: "long" })) + '</span></div>' +
+          '<div class="tp-hero__copy"><p class="tp-hero__kicker">Your upcoming event <span class="tp-chip tp-chip--ok"><i></i>' + esc(status) + '</span></p>' +
+          '<h2 class="tp-hero__title">' + esc(info.name || "Your event") + '</h2>' +
+          (sub ? '<p class="tp-hero__sub">' + esc(sub) + '</p>' : "") +
+          (info.pkg ? '<p class="tp-hero__pkg">Package: <b>' + esc(info.pkg.name) + '</b></p>' : "") + '</div>' +
+        '</div>' +
+        '<div class="tp-hero__actions">' + actions + '</div>' +
+        '<div class="tp-hero__dj">' +
+          '<p class="tp-hero__kicker">Your DJ</p>' +
+          '<img class="tp-hero__logo" src="' + esc(dj.logo) + '" alt="Tony Pre">' +
+          '<p class="tp-hero__role"><b>' + esc(dj.role) + '</b> · ' + esc(dj.tagline) + '</p>' +
+          '<div class="tp-hero__contacts">' +
+            '<a href="tel:' + esc(dj.phoneLink) + '">' + icon("phone") + '<span>' + esc(dj.phone) + '</span></a>' +
+            '<a href="sms:' + esc(dj.phoneLink) + '">' + icon("text") + '<span>Send a text</span></a>' +
+            '<a href="mailto:' + esc(dj.email) + '">' + icon("mail") + '<span>' + esc(dj.email) + '</span></a>' +
+            '<a href="https://instagram.com/' + esc(dj.instagram) + '" target="_blank" rel="noopener">' + icon("ig") + '<span>@' + esc(dj.instagram) + '</span></a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="tp-hero__count">' +
+        '<p class="tp-hero__countlabel"><i></i>The countdown is on</p>' +
+        '<div class="tp-clock" role="timer" aria-label="Time until your event">' +
+          ['days', 'hrs', 'min', 'sec'].map(function (u, i) {
+            return (i ? '<span class="tp-clock__sep" aria-hidden="true">:</span>' : "") +
+              '<span class="tp-clock__box"><b data-u="' + u + '">--</b><small>' + u + '</small></span>';
+          }).join("") +
+        '</div>' +
+        '<span class="tp-hero__cal"></span>' +
+      '</div>' +
+    '</section>';
+  }
+
+  function startClock(root, target) {
+    var els = {};
+    qsa("[data-u]", root).forEach(function (b) { els[b.getAttribute("data-u")] = b; });
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    function tick() {
+      if (!document.body.contains(root)) { clearInterval(t); return; }
+      var ms = Math.max(0, target - new Date());
+      var s = Math.floor(ms / 1000);
+      els.days.textContent = Math.floor(s / 86400).toLocaleString("en-US");
+      els.hrs.textContent = pad(Math.floor(s / 3600) % 24);
+      els.min.textContent = pad(Math.floor(s / 60) % 60);
+      els.sec.textContent = pad(s % 60);
+    }
+    var t = setInterval(tick, 1000);
+    tick();
+  }
+
+  // ---------------------------------------------------------- the build-up (waveform)
+  function journeySteps(info, lock, full) {
+    var ev = info.date, today = todayStart();
+    var start = info.bookedOn || (addDays(ev, -365) < today ? addDays(ev, -365) : today);
+    if (start > ev) start = addDays(ev, -1);
+    var steps = [
+      { title: "Date secured", date: start, sub: info.bookedOn ? "Booked " + fmtDate(info.bookedOn) : "You're on my calendar", forceDone: true },
+      { title: "Your soundtrack", date: addDays(ev, -274), sub: "Start your playlists" },
+      { title: "Creative meeting", date: addDays(ev, -122), sub: "About 4 months out" },
+      { title: "Final payment", date: addDays(ev, -60), sub: full ? "Paid in full" : "Due " + fmtDate(addDays(ev, -60)), paid: full },
+      { title: "Final planning", date: addDays(ev, -45), sub: "About 6 weeks out" },
+      { title: "Let's dance", date: ev, sub: fmtDate(ev) }
+    ].filter(function (s, i) { return i === 0 || s.date > start; });
+    var next = -1;
+    steps.forEach(function (s, i) {
+      s.state = (s.forceDone || s.paid || s.date < today) ? "done" : "later";
+      if (s.state !== "done" && next === -1) { next = i; s.state = "next"; }
+      s.pos = Math.max(0, Math.min(1, (s.date - start) / (ev - start || 1)));
+    });
+    var pct = Math.max(0, Math.min(1, (today - start) / (ev - start || 1)));
+    return { steps: steps, pct: pct };
+  }
+
+  function waveSvg(pct) {
+    var N = 120, W = 1000, H = 120, bw = W / N, out = [];
+    for (var i = 0; i < N; i++) {
+      var x = i / (N - 1);
+      var noise = (Math.sin(i * 12.9898) * 43758.5453) % 1; noise = Math.abs(noise);
+      var build = 0.12 + 0.62 * Math.pow(x, 1.7);              // the track builds toward the drop
+      var dip = x > 0.84 && x < 0.9 ? 0.45 : 1;                  // little breakdown before the drop
+      var amp = Math.min(1, (build + noise * 0.32) * dip);
+      if (x > 0.9) amp = Math.min(1, 0.78 + noise * 0.22);       // the drop
+      var h = Math.max(6, amp * (H - 8));
+      out.push('<rect x="' + (i * bw + 1).toFixed(1) + '" y="' + ((H - h) / 2).toFixed(1) + '" width="' + (bw - 3).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="2" class="' + (x <= pct ? "on" : "off") + '"/>');
+    }
+    return '<svg class="tp-wave__svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<defs><linearGradient id="tpWaveGrad" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#7a2cff"/><stop offset="0.6" stop-color="#d90898"/><stop offset="1" stop-color="#ff4fbf"/></linearGradient></defs>' +
+      out.join("") + '</svg>';
+  }
+
+  function journeyHtml(info, lock, full) {
+    var j = journeySteps(info, lock, full);
+    var pctTxt = Math.round(j.pct * 100);
+    var label = { done: "Done", next: "Up next", later: "Coming up" };
+    return '<section class="tp-card tp-wave" aria-label="Your journey">' +
+      '<div class="tp-wave__head"><div><p class="tp-kicker">Your journey</p>' +
+      '<h3 class="tp-wave__title">The build-up <em>to the drop.</em></h3></div>' +
+      '<p class="tp-wave__pct">You\'re <b>' + pctTxt + '%</b> of the way to the drop.</p></div>' +
+      '<div class="tp-wave__track">' +
+        j.steps.map(function (s, i) {
+          return '<span class="tp-wave__flag tp-wave__flag--' + s.state + (i === j.steps.length - 1 ? " tp-wave__flag--last" : i === 0 ? " tp-wave__flag--first" : "") + '" style="left:' + (s.pos * 100).toFixed(2) + '%">' + (i < 9 ? "0" : "") + (i + 1) + '</span>';
+        }).join("") +
+        waveSvg(j.pct) +
+        '<span class="tp-wave__head-line" style="left:' + (j.pct * 100).toFixed(2) + '%"></span>' +
+      '</div>' +
+      '<ol class="tp-wave__steps" style="--n:' + j.steps.length + '">' + j.steps.map(function (s, i) {
+        return '<li class="tp-wave__step tp-wave__step--' + s.state + '"><div class="tp-wave__steptop"><span class="tp-wave__num">' + (i < 9 ? "0" : "") + (i + 1) + '</span>' +
+          '<span class="tp-wave__chip">' + esc(s.paid ? "Paid" : label[s.state]) + '</span></div>' +
+          '<span class="tp-wave__name">' + esc(s.title) + '</span><span class="tp-wave__sub">' + esc(s.sub) + '</span></li>';
+      }).join("") + '</ol></section>';
+  }
+
+  // ---------------------------------------------------------- key dates
+  function keyDatesHtml(info, lock, full) {
+    var ev = info.date, rows = [];
+    var finalDue = addDays(ev, -60);
+    if (!full && info.nextDue && Math.abs(info.nextDue.date - finalDue) > DAY) {
+      rows.push({ title: "Next payment", sub: (info.nextDue.amount ? money(info.nextDue.amount) + " " : "") + "due", date: info.nextDue.date });
+    }
+    rows.push({ title: "Creative meeting", sub: "Music, flow and special moments, about 4 months out", date: addDays(ev, -122) });
+    rows.push({ title: "Final payment due", sub: full ? "Paid in full. Thank you!" : "Remaining balance, 60 days out", date: finalDue, paid: full });
+    rows.push({ title: "Final planning meeting", sub: "We lock in every detail, about 6 weeks out", date: addDays(ev, -45) });
+    rows.push({ title: "Add-on deadline", sub: "Last day to add enhancements", date: addDays(ev, -TP.addonDeadlineDays) });
+    if (lock) rows.push({ title: "Planning forms lock", sub: "Last day to make changes in the portal", date: lock });
+    rows.push({ title: /wedding/i.test(info.type || "") ? "Wedding day" : "Event day", sub: "Let's dance.", date: ev, hot: true });
+    rows.sort(function (a, b) { return a.date - b.date; });
+    return '<section class="tp-card tp-keys" aria-label="Key dates">' +
+      '<h3 class="tp-keys__title">Key dates</h3><ul class="tp-keys__list">' + rows.map(function (r) {
+        var n = daysUntil(r.date);
+        var right = r.paid ? "Paid" : n < 0 ? "Done" : inDays(r.date);
+        var cls = r.paid || n < 0 ? "done" : r.hot ? "hot" : "";
+        return '<li class="tp-keys__row' + (cls ? " tp-keys__row--" + cls : "") + '">' +
+          '<span class="tp-keys__tile' + (r.hot ? " tp-keys__tile--hot" : "") + '"><small>' + esc(r.date.toLocaleDateString("en-US", { month: "short" })) + '</small><b>' + r.date.getDate() + '</b></span>' +
+          '<span class="tp-keys__copy"><b>' + esc(r.title) + '</b><small>' + esc(r.sub) + '</small></span>' +
+          '<span class="tp-keys__when">' + esc(right) + '</span></li>';
+      }).join("") + '</ul></section>';
+  }
+
+  // ---------------------------------------------------------- enhancements
+  function family(name) { return String(name || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+  function isTravelOrDiscount(name) { return /discount|travel|toll|hotel|accommodation|rental vehicle|air travel|gear rental/i.test(name); }
+
+  function enhanceHtml(id, info) {
+    var booked = [];
+    if (info.pkg) booked.push({ name: info.pkg.name, price: info.pkg.price, sub: "Your package" });
+    info.items.forEach(function (it) { if (!isTravelOrDiscount(it.name)) booked.push({ name: it.name.replace(/\s*\(\d+\)\s*$/, ""), price: it.price, sub: "Enhancement" }); });
+    var have = {};
+    info.items.forEach(function (it) { have[family(it.name)] = 1; });
+    var avail = TP.addons.filter(function (a) { return !have[family(a.match || a.name)] && !have[family(a.name)]; });
+    var deadline = addDays(info.date, -TP.addonDeadlineDays);
+    var closed = todayStart() > deadline;
+    var priceTxt = function (a) { return a.price == null ? "Ask me" : (a.from ? "From " : "") + money(a.price); };
+    return '<section class="tp-enh" aria-label="Your enhancements" data-event="' + esc(info.name || "") + '">' +
+      '<div class="tp-enh__head"><div><p class="tp-kicker">Your enhancements</p><h3 class="tp-enh__title">Turn the night <em>up.</em></h3></div>' +
+      '<p class="tp-enh__note">' + (closed ? "The add-on deadline has passed, but message me and I'll see what I can do." :
+        "Tap anything that catches your eye and send it to me. I'll confirm pricing and availability before anything is added. Last day to add: " + esc(fmtDate(deadline)) + ".") + '</p></div>' +
+      '<div class="tp-enh__grid">' +
+        '<div class="tp-card tp-enh__booked"><h4>Booked for your night</h4><ul>' + (booked.length ? booked.map(function (b) {
+          return '<li><span class="tp-enh__check">' + icon("check") + '</span><span class="tp-enh__copy"><b>' + esc(b.name) + '</b><small>' + esc(b.sub) + '</small></span>' +
+            (b.price ? '<span class="tp-enh__price">' + money(b.price) + '</span>' : "") + '</li>';
+        }).join("") : '<li class="tp-enh__empty">Your package details will show here.</li>') + '</ul></div>' +
+        '<div class="tp-card tp-enh__add"><h4>Add to your night</h4>' +
+          '<ul class="tp-enh__menu">' + avail.map(function (a) {
+            return '<li class="' + (a.featured ? "" : "tp-enh__more") + '"><span class="tp-enh__copy"><b>' + esc(a.name) + '</b><small>' + esc(a.note) + '</small></span>' +
+              '<span class="tp-enh__price">' + esc(priceTxt(a)) + '</span>' +
+              '<button type="button" class="tp-enh__btn" aria-pressed="false" data-name="' + esc(a.name) + '"' + (closed ? " disabled" : "") + '>+ Add</button></li>';
+          }).join("") + '</ul>' +
+          (avail.some(function (a) { return !a.featured; }) ? '<button type="button" class="tp-enh__toggle">Show all enhancements</button>' : "") +
+          '<div class="tp-enh__bar" hidden><span class="tp-enh__count"></span><a class="tp-btn tp-enh__send" href="#">Send to Tony</a></div>' +
+        '</div>' +
+      '</div></section>';
+  }
+
+  function wireEnhance(root, id) {
+    var picked = [];
+    var bar = qs(".tp-enh__bar", root), count = qs(".tp-enh__count", root), send = qs(".tp-enh__send", root);
+    var evName = root.getAttribute("data-event") || "";
+    function update() {
+      bar.hidden = !picked.length;
+      count.textContent = picked.length + (picked.length === 1 ? " enhancement" : " enhancements") + " selected";
+      send.href = "contact.asp?tpadd=" + encodeURIComponent(picked.join("|")) + (evName ? "&tpevent=" + encodeURIComponent(evName) : "");
+    }
+    qsa(".tp-enh__btn", root).forEach(function (b) {
+      b.addEventListener("click", function () {
+        var name = b.getAttribute("data-name"), on = b.getAttribute("aria-pressed") !== "true";
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+        b.textContent = on ? "✓ Added" : "+ Add";
+        picked = picked.filter(function (p) { return p !== name; });
+        if (on) picked.push(name);
+        update();
+      });
+    });
+    var tg = qs(".tp-enh__toggle", root);
+    if (tg) tg.addEventListener("click", function () {
+      var open = root.classList.toggle("tp-enh--all");
+      tg.textContent = open ? "Show fewer" : "Show all enhancements";
+    });
+  }
+
+  // ---------------------------------------------------------- hear my sound
+  function soundHtml() {
+    var d = TP.dj;
+    return '<section class="tp-card tp-sound" aria-label="Hear my sound">' +
+      '<p class="tp-kicker">Hear my sound</p><h3 class="tp-sound__title">Get a feel for the vibe while you plan.</h3>' +
+      '<p class="tp-sound__intro">' + esc(d.intro) + '</p>' +
+      '<ul class="tp-sound__links">' + d.links.map(function (l) {
+        return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener"><span>' + esc(l[0]) + '</span><small>' +
+          esc(/instagram/i.test(l[0]) ? "Clips from recent nights" : /spotify|apple/i.test(l[0]) ? "My original music" : "Full DJ mixes") +
+          '</small><i aria-hidden="true">&rarr;</i></a></li>';
+      }).join("") + '</ul>' +
+      '<div class="tp-meet__actions"><a class="tp-btn" href="' + esc(d.meeting) + '" target="_blank" rel="noopener">Book a call with me</a>' +
+      '<a class="tp-link" href="' + esc(d.website) + '" target="_blank" rel="noopener">Visit my website</a></div></section>';
+  }
+
+  function buildDashboard(id, card) {
+    var panel = card.closest(".djep-home-events-panel") || card;
+    if (qs(".tp-dash")) return;
+    var dash = document.createElement("div");
+    dash.className = "tp-dash";
+    dash.innerHTML = '<div class="tp-slot tp-slot--hero"></div><div class="tp-slot tp-slot--wave"></div><div class="tp-slot tp-slot--progress"></div>' +
+      '<div class="tp-slot tp-slot--enh"></div><div class="tp-dash__pair"><div class="tp-slot tp-slot--keys"></div><div class="tp-slot tp-slot--sound">' + soundHtml() + '</div></div>';
+    panel.insertAdjacentElement("beforebegin", dash);
+    loadProgress(id, qs(".tp-slot--progress", dash), "afterbegin");
+    eventInfo(id).then(function (info) {
+      if (!info || !info.date) throw new Error("no info");
+      var full = isPaidFull(info);
+      qs(".tp-slot--hero", dash).innerHTML = heroHtml(id, info);
+      // the hero replaces DJEP's own card for this event
+      card.classList.add("tp-card-replaced");
+      if (!qsa(".djep-home-event-card", panel).some(function (c) { return !c.classList.contains("tp-card-replaced"); })) panel.classList.add("tp-card-replaced");
+      startClock(qs(".tp-hero", dash), eventStart(info));
+      calendarButton(id, qs(".tp-hero__cal", dash), "afterbegin");
+      qs(".tp-slot--enh", dash).innerHTML = enhanceHtml(id, info);
+      wireEnhance(qs(".tp-enh", dash), id);
+      return lockDate(id, info.date).then(function (lock) {
+        qs(".tp-slot--wave", dash).innerHTML = journeyHtml(info, lock, full);
+        qs(".tp-slot--keys", dash).innerHTML = keyDatesHtml(info, lock, full);
+      });
+    }).catch(function () {
+      // fall back to the earlier layout if the event page could not be read
+      dash.remove();
+      card.classList.remove("tp-card-replaced");
+      panel.classList.remove("tp-card-replaced");
+      var grid = document.createElement("div");
+      grid.className = "tp-home-grid";
+      grid.innerHTML = '<div class="tp-slot tp-slot--progress"></div><div class="tp-slot tp-slot--road"></div><div class="tp-slot tp-slot--meet">' + meetHtml() + '</div>';
+      panel.insertAdjacentElement("afterend", grid);
+      loadProgress(id, qs(".tp-slot--progress", grid), "afterbegin");
+      loadEventCards(id, { roadmap: qs(".tp-slot--road", grid) });
+    });
+  }
+
+  // Contact page: pre-fill the message when enhancements were picked on Home
+  function contactPage() {
+    var add = param("tpadd");
+    if (!add) return;
+    when(function () { return qs('[name="contact_form_message"]'); }, function (ta) {
+      var subj = qs('[name="contact_form_subject"]');
+      var ev = param("tpevent");
+      var list = add.split("|").filter(Boolean);
+      if (subj && !subj.value) subj.value = "Enhancement request" + (ev ? ": " + ev : "");
+      if (!ta.value) ta.value = "Hi Tony! I'd love to add " + (list.length === 1 ? "this" : "these") + " to " + (ev || "my event") + ":\n\n" +
+        list.map(function (x) { return "- " + x; }).join("\n") + "\n\nCan you confirm pricing and availability?";
+      ta.focus();
+    });
+  }
+
   // --------------------------------------------------------------- pages
   function homePage() {
     when(function () { return qsa(".djep-home-event-card").length ? qsa(".djep-home-event-card") : null; }, function (cards) {
@@ -487,22 +858,15 @@
         var id = card.getAttribute("data-eventid");
         var date = parseDate(txt(qs(".event_date_" + id, card)));
         var details = qs(".djep-home-event-details", card);
-        if (date && details) {
+        var first = i === 0 && date && daysUntil(date) >= 0;
+        if (date && details && !first) {
           var html = countdownHtml(date, false);
           if (html) details.insertAdjacentHTML("beforeend", html);
+          var cdEl = qs(".tp-countdown", details);
+          if (daysUntil(date) >= 0 && cdEl) calendarButton(id, cdEl, "afterend");
         }
-        var cdEl = details && qs(".tp-countdown", details);
-        if (date && daysUntil(date) >= 0 && cdEl) calendarButton(id, cdEl, "afterend");
         // full dashboard for the first upcoming event only (keeps Home fast)
-        if (i === 0 && date && daysUntil(date) >= 0) {
-          var panel = card.closest(".djep-home-events-panel") || card;
-          var grid = document.createElement("div");
-          grid.className = "tp-home-grid";
-          grid.innerHTML = '<div class="tp-slot tp-slot--progress"></div><div class="tp-slot tp-slot--road"></div><div class="tp-slot tp-slot--meet">' + meetHtml() + '</div>';
-          panel.insertAdjacentElement("afterend", grid);
-          loadProgress(id, qs(".tp-slot--progress", grid), "afterbegin");
-          loadEventCards(id, { roadmap: qs(".tp-slot--road", grid) });
-        }
+        if (first) buildDashboard(id, card);
       });
     });
   }
@@ -613,6 +977,7 @@
     if (/\/clients\/home\.asp/.test(path)) homePage();
     else if (/\/clients\/planmyevent\.asp/.test(path)) planPage();
     else if (/\/clients\/eventdetails\.asp/.test(path)) detailsPage();
+    else if (/\/clients\/contact\.asp/.test(path)) contactPage();
   }
 
   if (blockSpecialSongs()) return;
