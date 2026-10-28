@@ -264,7 +264,8 @@
       { name: "Satellite Speaker for Cocktail", price: 150, note: "Music for a separate cocktail space" },
       { name: "Wireless Zone Speaker", price: 250, note: "Extra sound wherever guests gather" }
     ],
-    addonDeadlineDays: 30 // matches the 30-day services deadline email
+    addonDeadlineDays: 30, // matches the 30-day services deadline email
+    finalPaymentDays: 60   // final balance due this many days before the event
   };
 
   function fmtDate(d, long) {
@@ -322,12 +323,22 @@
         if (section === "pkg" && !info.pkg) info.pkg = { name: name, price: p };
         else if (section === "add") info.items.push({ name: name, price: p });
       });
-      // first payment = the day the date was secured
+      // payment history; first payment = the day the date was secured
+      info.history = [];
+      info.retainer = num(rowValue(doc, ".djep-totalfeebox", "retainer"));
+      info.subtotal = num(rowValue(doc, ".djep-totalfeebox", "package and addons"));
       qsa(".djep-paymenthistorybox tr", doc).forEach(function (tr) {
-        var m = txt(tr).match(/(\d{1,2}\/\d{1,2}\/\d{4})/);
+        var t = txt(tr);
+        var m = t.match(/(\d{1,2}\/\d{1,2}\/\d{4})/);
         var d = m && parseDate(m[1]);
         if (d && (!info.bookedOn || d < info.bookedOn)) info.bookedOn = d;
+        var am = t.match(/\$\s?[\d,]+(\.\d{2})?/);
+        if (d && am) {
+          var method = t.replace(m[1], "").replace(am[0], "").replace(/[-–:\s]+$/, "").replace(/^[-–:\s]+/, "").trim();
+          info.history.push({ date: d, amount: num(am[0]), method: method || "Payment", refund: /refund/i.test(t) });
+        }
       });
+      info.history.sort(function (a, b) { return b.date - a.date; });
       // next scheduled payment, if DJEP lists one with a due date
       var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       qsa(".djep-paymentsfinancesbox tr, .djep-paymenthistorybox tr", doc).forEach(function (tr) {
@@ -834,6 +845,110 @@
     });
   }
 
+  // ======================================================================
+  // MAKE A PAYMENT (2026-10-28): investment summary, payment plan,
+  // history and fee breakdown around DJEP's own pay button.
+  // ======================================================================
+  function paymentPageHtml(id, info, payHref) {
+    var total = info.total || 0;
+    var balance = info.balance != null ? Math.max(0, info.balance) : Math.max(0, total - info.paid);
+    var paid = Math.max(0, total - balance);
+    var full = total > 0 && balance <= 0.004;
+    var pct = total ? Math.min(100, Math.round((paid / total) * 100)) : 0;
+    var today = todayStart();
+    var finalDue = addDays(info.date, -TP.finalPaymentDays);
+    var retainer = info.retainer && info.retainer < total ? info.retainer : null;
+    var retPct = retainer ? Math.round((retainer / total) * 100) : null;
+
+    // the plan: retainer at booking, balance before the event (DJEP due dates win when listed)
+    var plan = [];
+    if (retainer) plan.push({ title: "Retainer (" + retPct + "%)", sub: "Secures your date", amount: retainer, date: info.bookedOn, paid: paid + 0.004 >= retainer, when: paid + 0.004 >= retainer ? (info.bookedOn ? "Paid " + fmtDate(info.bookedOn) : "Paid") : "Due now to hold your date" });
+    var restAmt = retainer ? total - retainer : total;
+    plan.push({ title: retainer ? "Final balance (" + (100 - retPct) + "%)" : "Balance", sub: TP.finalPaymentDays + " days before your event", amount: restAmt, date: finalDue, paid: full, when: full ? "Paid in full" : "Due " + fmtDate(finalDue) + (daysUntil(finalDue) >= 0 ? " · " + inDays(finalDue).toLowerCase() : "") });
+    var nextIdx = -1;
+    plan.forEach(function (p, i) { if (!p.paid && nextIdx === -1) nextIdx = i; });
+
+    var nextAmt = 0;
+    if (!full) {
+      if (info.nextDue && info.nextDue.amount) nextAmt = Math.min(info.nextDue.amount, balance);
+      else if (retainer && paid + 0.004 < retainer) nextAmt = retainer - paid;
+      else nextAmt = balance;
+    }
+    var nextDate = !full ? (info.nextDue ? info.nextDue.date : nextIdx > -1 ? plan[nextIdx].date : finalDue) : null;
+    var overdue = nextDate && nextDate < today;
+
+    var fee = [];
+    if (info.pkg) fee.push({ name: info.pkg.name, price: info.pkg.price, kind: "Package" });
+    info.items.forEach(function (it) { fee.push({ name: it.name.replace(/\s*\(\d+\)\s*$/, ""), price: it.price, kind: isTravelOrDiscount(it.name) ? (/discount/i.test(it.name) ? "Discount" : "Travel") : "Enhancement" }); });
+
+    return '<div class="tp-paypage">' +
+      '<div class="tp-paypage__intro"><p class="tp-kicker">Payments</p><h2 class="tp-paypage__title">Your investment</h2>' +
+      '<p class="tp-paypage__lead">' + esc(info.name || "Your event") + (info.date ? " · " + esc(fmtDate(info.date, true)) : "") + '</p></div>' +
+      '<div class="tp-paypage__cols"><div class="tp-paypage__col">' +
+        // summary
+        '<section class="tp-card tp-paysum">' +
+          '<div class="tp-paysum__label">Total for your night</div>' +
+          '<div class="tp-paysum__total">' + money(total) + '</div>' +
+          '<div class="tp-paysum__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><span style="width:' + pct + '%"></span></div>' +
+          '<div class="tp-paysum__split"><span><b>' + money(paid) + '</b> paid</span><span><b>' + money(balance) + '</b> remaining</span></div>' +
+          (full
+            ? '<div class="tp-paysum__done">' + icon("check") + '<span><b>Paid in full</b><small>Thank you! Your night is all set on my end.</small></span></div>'
+            : '<div class="tp-paysum__next' + (overdue ? " tp-paysum__next--late" : "") + '"><small>' + (overdue ? "Past due" : "Next payment") + '</small><b>' + money(nextAmt) + '</b>' +
+              '<span>' + (nextDate ? (overdue ? "Was due " : "Due ") + esc(fmtDate(nextDate)) + (overdue ? "" : " · " + esc(inDays(nextDate).toLowerCase())) : "Anytime") + '</span></div>' +
+              (payHref ? '<a class="tp-paysum__pay" href="' + esc(payHref) + '">' + icon("card") + 'Pay with Venmo</a>' : "") +
+              '<p class="tp-paysum__fine">Pay the next amount, a little extra, or the full ' + money(balance) + ' anytime. Your tracker updates once I receive it.</p>') +
+        '</section>' +
+        '<section class="tp-card tp-hist"><h3 class="tp-plan__title">Payment history</h3>' +
+          (info.history.length ? '<ul class="tp-hist__list">' + info.history.map(function (h) {
+            return '<li><span class="tp-keys__tile"><small>' + esc(h.date.toLocaleDateString("en-US", { month: "short" })) + '</small><b>' + h.date.getDate() + '</b></span>' +
+              '<span class="tp-keys__copy"><b>' + esc(h.method) + '</b><small>' + esc(fmtDate(h.date)) + '</small></span>' +
+              '<span class="tp-hist__amt' + (h.refund ? " tp-hist__amt--refund" : "") + '">' + (h.refund ? "-" : "") + money(h.amount) + '</span></li>';
+          }).join("") + '</ul>' : '<p class="tp-hist__empty">No payments yet. Your first one will show up here.</p>') +
+        '</section>' +
+      '</div><div class="tp-paypage__col">' +
+        // plan
+        '<section class="tp-card tp-plan">' +
+          '<h3 class="tp-plan__title">Payment plan</h3>' +
+          '<ol class="tp-plan__list">' + plan.map(function (p, i) {
+            var st = p.paid ? "paid" : i === nextIdx ? (p.date && p.date < today ? "late" : "next") : "later";
+            var lbl = { paid: "Paid", next: "Next", late: "Past due", later: "Upcoming" }[st];
+            return '<li class="tp-plan__row tp-plan__row--' + st + '"><span class="tp-plan__dot">' + (p.paid ? icon("check") : (i + 1)) + '</span>' +
+              '<span class="tp-plan__copy"><b>' + esc(p.title) + '</b><small>' + esc(p.when) + '</small></span>' +
+              '<span class="tp-plan__amt"><b>' + money(p.amount) + '</b><small>' + lbl + '</small></span></li>';
+          }).join("") + '</ol>' +
+          '<p class="tp-plan__note">' + (retainer ? "The " + retPct + "% retainer secures your date. " : "") + "The remaining balance is due " + TP.finalPaymentDays + " days before your event. Questions about your plan? <a href=\"contact.asp\">Message me</a>.</p>" +
+        '</section>' +
+        '<section class="tp-card tp-feebox"><h3 class="tp-plan__title">What\'s included</h3><ul class="tp-feebox__list">' +
+          fee.map(function (f) {
+            return '<li><span class="tp-keys__copy"><b>' + esc(f.name) + '</b><small>' + esc(f.kind) + '</small></span><span class="tp-feebox__price' + (f.price < 0 ? " tp-feebox__price--neg" : "") + '">' + (f.price == null ? "" : (f.price < 0 ? "-" : "") + money(Math.abs(f.price))) + '</span></li>';
+          }).join("") +
+          '<li class="tp-feebox__total"><span>Total</span><span>' + money(total) + '</span></li>' +
+        '</ul><a class="tp-link" href="eventdetails.asp?eventid=' + encodeURIComponent(id) + '">See event details</a></section>' +
+      '</div></div>' +
+    '</div>';
+  }
+
+  function paymentPage() {
+    var id = param("eventid");
+    if (!id || (location.search && !/action=choose_payment_gateway/i.test(location.search) && /action=/i.test(location.search))) return;
+    when(function () { return qs("#page_paypal .djep-makepaymentbox") || qs("#page_paypal"); }, function () {
+      var page = qs("#page_paypal");
+      if (!page || qs(".tp-paypage")) return;
+      var gw = qsa(".djep-makepaymentbox a[href]", page);
+      var payHref = gw.length ? gw[0].getAttribute("href") : "";
+      eventInfo(id).then(function (info) {
+        if (!info || !info.total) return;
+        var wrap = document.createElement("div");
+        wrap.innerHTML = paymentPageHtml(id, info, gw.length === 1 ? payHref : "");
+        page.insertBefore(wrap.firstChild, page.firstChild);
+        page.classList.add("tp-paypage-ready");
+        // more than one gateway: keep DJEP's choices visible under a heading
+        if (gw.length > 1) qs(".tp-paysum__fine", page) && qs(".tp-paysum__fine", page).insertAdjacentHTML("beforebegin", '<p class="tp-paysum__fine">Choose how to pay below.</p>');
+        else page.classList.add("tp-paypage-onegw");
+      }).catch(function () {});
+    });
+  }
+
   // Contact page: pre-fill the message when enhancements were picked on Home
   function contactPage() {
     var add = param("tpadd");
@@ -978,6 +1093,7 @@
     else if (/\/clients\/planmyevent\.asp/.test(path)) planPage();
     else if (/\/clients\/eventdetails\.asp/.test(path)) detailsPage();
     else if (/\/clients\/contact\.asp/.test(path)) contactPage();
+    else if (/\/clients\/makeapayment\.asp/.test(path)) paymentPage();
   }
 
   if (blockSpecialSongs()) return;
