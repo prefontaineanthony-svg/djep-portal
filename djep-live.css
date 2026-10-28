@@ -17803,3 +17803,87 @@ html {
   letter-spacing: 0.14em !important;
   font-weight: 700 !important;
 }
+
+/* ============================================================================
+   PHONE / TABLET / DESKTOP PASS (2026-10-27)
+   ============================================================================ */
+
+/* Music browser: the portal script paints this panel and its tabs light with
+   inline !important styles. A dark layer inside the panel's own stacking
+   context sits above that inline background, so the panel reads dark. */
+#djep-content .djep-music-browser-shell {
+  position: relative;
+  isolation: isolate;
+  outline: 2px solid #1b1023;
+  outline-offset: -2px;
+}
+
+#djep-content .djep-music-browser-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(360px 160px at 0% 0%, rgba(217, 8, 152, 0.10), transparent 70%),
+    linear-gradient(180deg, #170e1e 0%, #120a17 100%);
+  pointer-events: none;
+}
+
+/* Tab pills (Top Hits / Song / Artist / Add Your Own): the script sets light
+   pill + dark text inline; invert them back to a dark pill with light text. */
+#djep-content .djep-music-browser-shell .ui-tabs-nav .ui-tabs-anchor {
+  filter: invert(1) hue-rotate(180deg) saturate(1.2);
+}
+
+/* jQuery UI ships Verdana and loads after the theme */
+#djep-content .ui-widget,
+#djep-content .ui-widget *:not(i):not([class*="fa-"]),
+.ui-dialog,
+.ui-dialog *:not(i):not([class*="fa-"]) {
+  font-family: var(--djep-font-family) !important;
+}
+
+/* Request Changes: venue/date/time pickers are forced white inline; flip them dark */
+#djep-content [id^="change_of_"] select {
+  filter: invert(0.92) hue-rotate(180deg);
+}
+
+/* Plan My Event: "!" planning-window icon was dark pink on dark */
+body.djep-planpage-ready .djep-plan-access-icon {
+  color: var(--tp-pink-2) !important;
+}
+
+/* Planning form view: grid questions (e.g. Parents Names, 5 columns) were
+   cut off on phones. Let wide tables scroll sideways inside the card. */
+@media (max-width: 767px) {
+  #djep-content .djep-planningform-view-panel table table,
+  #djep-content .djep-planningformsviewbox table table,
+  #djep-content .djep-planningform-panel table table {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #djep-content .djep-planningform-view-panel table table td,
+  #djep-content .djep-planningformsviewbox table table td,
+  #djep-content .djep-planningform-panel table table td {
+    min-width: 96px;
+  }
+
+  #djep-content table[id^="planning_form_table_"] {
+    width: 100% !important;
+    table-layout: fixed;
+  }
+
+  /* Contact page: phone, email and website links get a real tap target */
+  #djep-content .djep-contact-panel a[href^="tel:"],
+  #djep-content .djep-contact-panel a[href^="mailto:"],
+  #djep-content .djep-contact-panel a[href^="http"] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
