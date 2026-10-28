@@ -270,6 +270,16 @@
       { cat: "Music and sound", name: "Wireless Zone Speaker", price: 250, note: "Extra sound wherever guests gather" },
       { cat: "Music and sound", name: "Audio Guest Book", price: null, note: "Voice messages from your guests to keep forever" }
     ],
+    // "Suggested services" shown first (Tony 2026-10-28); "See all" opens the full menu.
+    // family = the DJEP add-ons it covers; hidden once any of them is booked.
+    suggested: [
+      { name: "Wireless Color Uplighting", price: 900, note: "Wash the room in your colors", family: ["Wireless Color Uplighting (20 Fixtures)", "Wireless Color Uplighting (30 Fixtures)"] },
+      { name: "Intelligent Moving Heads", price: 750, note: "Club-style moving lights over the dance floor", family: ["Intelligent Moving Head (2 Fixtures)", "Intelligent Moving Head (4 Fixtures)"] },
+      { name: "CO2 Handheld Cannon", price: 400, note: "I fire it into the crowd at peak moments", family: ["CO2 Handheld Canon"] },
+      { name: "Dancing on a Cloud", price: 500, note: "A low cloud rolls across the floor for your first dance", family: ["Dancing on a Cloud"] },
+      { name: "Cold Sparkler Fountains", price: 500, note: "Indoor-safe sparks for entrances and the last dance", family: ["Cold Sparkler Fountains"] },
+      { name: "Photo Booth", price: 750, note: "Open air, social or A.I. booths", family: ["Deluxe Social Booth", "Premium Open Air Photobooth", "A.I. Generation Photobooth"] }
+    ],
     addonDeadlineDays: 30, // matches the 30-day services deadline email
     finalPaymentDays: 60   // final balance due this many days before the event
   };
@@ -771,10 +781,11 @@
     var avail = TP.addons.filter(function (a) { return !have[key(a.match || a.name)] && !have[key(a.name)]; });
     var cats = [];
     avail.forEach(function (a) { if (cats.indexOf(a.cat) === -1) cats.push(a.cat); });
+    var sugg = TP.suggested.filter(function (g) { return !g.family.some(function (f) { return have[key(f)]; }); });
     var deadline = addDays(info.date, -TP.addonDeadlineDays);
     var closed = todayStart() > deadline;
     var priceTxt = function (a) { return a.price == null ? "Ask me" : (a.from ? "From " : "") + money(a.price); };
-    return '<section class="tp-enh" aria-label="Your enhancements" data-event="' + esc(info.name || "") + '">' +
+    return '<section class="tp-enh' + (sugg.length ? "" : " tp-enh--all") + '" aria-label="Your enhancements" data-event="' + esc(info.name || "") + '">' +
       '<div class="tp-enh__head"><div><p class="tp-kicker">Your enhancements</p><h3 class="tp-enh__title">Turn the night <em>up.</em></h3></div>' +
       '<p class="tp-enh__note">' + (closed ? "The add-on deadline has passed, but message me and I'll see what I can do." :
         "Tap anything that catches your eye and send it to me. I'll confirm pricing and availability before anything is added. Last day to add: " + esc(fmtDate(deadline)) + ".") + '</p></div>' +
@@ -783,14 +794,21 @@
           return '<li><span class="tp-enh__check">' + icon("check") + '</span><span class="tp-enh__copy"><b>' + esc(b.name) + '</b><small>' + esc(b.sub) + '</small></span>' +
             (b.price ? '<span class="tp-enh__price">' + money(b.price) + '</span>' : "") + '</li>';
         }).join("") : '<li class="tp-enh__empty">Your package details will show here.</li>') + '</ul></div>' +
-        '<div class="tp-card tp-enh__add"><h4>Add to your night</h4>' +
+        '<div class="tp-card tp-enh__add"><h4>Would you like to add any services to your night?</h4>' +
+          (sugg.length ? '<div class="tp-enh__sugg"><p class="tp-enh__cat">Suggested services</p><ul class="tp-enh__menu">' + sugg.map(function (a) {
+            return '<li><span class="tp-enh__copy"><b>' + esc(a.name) + '</b><small>' + esc(a.note) + '</small></span>' +
+              '<span class="tp-enh__price">From ' + money(a.price) + '</span>' +
+              '<button type="button" class="tp-enh__btn" aria-pressed="false" data-name="' + esc(a.name) + '"' + (closed ? " disabled" : "") + '>+ Add</button></li>';
+          }).join("") + '</ul></div>' : "") +
+          '<div class="tp-enh__all">' +
           cats.map(function (c) {
             return '<p class="tp-enh__cat">' + esc(c) + '</p><ul class="tp-enh__menu">' + avail.filter(function (a) { return a.cat === c; }).map(function (a) {
               return '<li><span class="tp-enh__copy"><b>' + esc(a.name) + '</b><small>' + esc(a.note) + '</small></span>' +
                 '<span class="tp-enh__price">' + esc(priceTxt(a)) + '</span>' +
                 '<button type="button" class="tp-enh__btn" aria-pressed="false" data-name="' + esc(a.name) + '"' + (closed ? " disabled" : "") + '>+ Add</button></li>';
             }).join("") + '</ul>';
-          }).join("") +
+          }).join("") + '</div>' +
+          (sugg.length ? '<button type="button" class="tp-enh__toggle" aria-expanded="false">See all services</button>' : "") +
           '<div class="tp-enh__bar" hidden><span class="tp-enh__count"></span><a class="tp-btn tp-enh__send" href="#">Send to Tony</a></div>' +
         '</div>' +
       '</div></section>';
@@ -818,7 +836,8 @@
     var tg = qs(".tp-enh__toggle", root);
     if (tg) tg.addEventListener("click", function () {
       var open = root.classList.toggle("tp-enh--all");
-      tg.textContent = open ? "Show fewer" : "Show all enhancements";
+      tg.setAttribute("aria-expanded", open ? "true" : "false");
+      tg.textContent = open ? "Show suggested services" : "See all services";
     });
   }
 

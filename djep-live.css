@@ -19523,3 +19523,12 @@ a[href*="print_special"],
 .tp-enh__menu li.tp-enh__more { display: flex; }
 /* the drop: "Let's dance" flag glows */
 .tp-wave__flag--last { box-shadow: 0 0 16px rgba(255, 79, 191, 0.7); }
+
+/* add-on menu: suggested first, "See all services" opens everything (2026-10-28) */
+.tp-enh__all { display: none; }
+.tp-enh--all .tp-enh__all { display: block; }
+.tp-enh--all .tp-enh__sugg { display: none; }
+.tp-enh__add h4 { line-height: 1.3 !important; }
+.tp-enh__sugg .tp-enh__cat { margin-top: 4px !important; }
+.tp-enh__toggle { display: inline-flex; align-items: center; margin-top: 16px; min-height: 40px; padding: 0 18px; border-color: rgba(217, 8, 152, 0.6); }
+.tp-enh__toggle:hover { background: rgba(217, 8, 152, 0.12); }
