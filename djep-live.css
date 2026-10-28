@@ -18512,3 +18512,8 @@ a[href*="print_special"],
     justify-self: start;
   }
 }
+
+.tp-pay__badge { white-space: nowrap; }
+@media (max-width: 479px) {
+  .tp-pay__badge { padding: 6px 11px; font-size: 0.7rem; letter-spacing: 0.06em; }
+}
