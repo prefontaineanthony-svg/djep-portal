@@ -2829,10 +2829,8 @@ form[name="ep_form"][action*="browsemusic.asp"] #add_your_own_song_helper_div in
   grid-column: span 6;
 }
 
-#page_eventdetails .djep-relatedfilesbox,
-#page_eventdetails > .col-xs-12:has(.djep-relatedfilesbox) {
-  display: none;
-}
+/* Related Files box is SHOWN (Tony, 2026-10-27): files marked
+   "visible to client" in DJEP (gear rental quotes, etc.) must appear. */
 
 #page_eventdetails .djep-eventdetails-card-documents {
   grid-column: 1 / -1;
@@ -17657,4 +17655,34 @@ html {
   padding: 0 !important;
   background: none !important;
   border: 0 !important;
+}
+
+/* Related Files (quotes, gear rentals, uploads): same champagne treatment
+   as the Documents card so clients find every file in one look. */
+#page_eventdetails .djep-relatedfilesbox {
+  border-color: rgba(232, 211, 176, 0.32) !important;
+  background:
+    radial-gradient(420px 140px at 100% 0%, rgba(232, 211, 176, 0.08), transparent 70%),
+    var(--tp-card) !important;
+}
+
+#page_eventdetails .djep-relatedfilesbox > .djep-titlebar,
+#page_eventdetails .djep-relatedfilesbox > .djep-titlebarsmall {
+  color: var(--tp-champagne) !important;
+}
+
+#page_eventdetails .djep-relatedfilesbox a {
+  color: var(--tp-pink-2) !important;
+  cursor: pointer !important;
+}
+
+#page_eventdetails .djep-relatedfilesbox .djep-readviewbutton {
+  color: #fff !important;
+  background: rgba(217, 8, 152, 0.14) !important;
+  border: 1px solid rgba(217, 8, 152, 0.55) !important;
+}
+
+#page_eventdetails .djep-relatedfilesbox .djep-readviewbutton:hover {
+  background: var(--tp-pink) !important;
+  border-color: var(--tp-pink) !important;
 }
