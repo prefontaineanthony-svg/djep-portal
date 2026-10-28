@@ -682,7 +682,7 @@
       '<p class="tp-wave__pct">You\'re <b>' + pctTxt + '%</b> of the way to the drop.</p></div>' +
       '<div class="tp-wave__track">' +
         j.steps.map(function (s, i) {
-          return '<span class="tp-wave__flag tp-wave__flag--' + s.state + '" style="left:' + (s.pos * 100).toFixed(2) + '%">' + (i < 9 ? "0" : "") + (i + 1) + '</span>';
+          return '<span class="tp-wave__flag tp-wave__flag--' + s.state + (i === j.steps.length - 1 ? " tp-wave__flag--last" : i === 0 ? " tp-wave__flag--first" : "") + '" style="left:' + (s.pos * 100).toFixed(2) + '%">' + (i < 9 ? "0" : "") + (i + 1) + '</span>';
         }).join("") +
         waveSvg(j.pct) +
         '<span class="tp-wave__head-line" style="left:' + (j.pct * 100).toFixed(2) + '%"></span>' +

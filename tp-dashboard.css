@@ -307,8 +307,8 @@
 }
 .tp-wave__flag--done,
 .tp-wave__flag--next { background: #d90898; color: #fff; box-shadow: 0 0 14px rgba(217, 8, 152, 0.6); }
-.tp-wave__flag:first-of-type { transform: none; }
-.tp-wave__flag:first-of-type::after { left: 8px; }
+.tp-wave__flag--first { transform: none; }
+.tp-wave__flag--first::after { left: 8px; }
 .tp-wave__steps {
   display: grid;
   grid-template-columns: repeat(var(--n, 6), minmax(0, 1fr));
@@ -483,8 +483,8 @@
 }
 
 /* last waveform marker sits inside the card */
-.tp-wave__flag:last-of-type { transform: translateX(-100%); }
-.tp-wave__flag:last-of-type::after { left: auto; right: 8px; }
+.tp-wave__flag--last { transform: translateX(-100%); }
+.tp-wave__flag--last::after { left: auto; right: 8px; }
 
 /* hear my sound: link rows */
 .tp-sound__links { margin: 4px 0 0 !important; padding: 0 !important; list-style: none !important; }
