@@ -18576,3 +18576,7 @@ a[href*="print_special"],
     font-size: 0.78rem;
   }
 }
+
+.tp-countdown__label,
+.tp-countdown__sub,
+.tp-cal-btn { white-space: nowrap; }
