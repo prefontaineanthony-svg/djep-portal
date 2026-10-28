@@ -777,7 +777,11 @@
   function enhanceHtml(id, info) {
     var booked = [];
     if (info.pkg) booked.push({ name: info.pkg.name, price: info.pkg.price, sub: "Your package" });
-    info.items.forEach(function (it) { if (!isTravelOrDiscount(it.name)) booked.push({ name: it.name.replace(/\s*\(\d+\)\s*$/, ""), price: it.price, sub: "Enhancement" }); });
+    // everything on the fee sheet: enhancements, travel coverage, discounts (Tony 2026-10-28)
+    info.items.forEach(function (it) {
+      var sub = /discount/i.test(it.name) ? "Discount" : isTravelOrDiscount(it.name) ? "Travel" : "Enhancement";
+      booked.push({ name: it.name.replace(/\s*\(\d+\)\s*$/, ""), price: it.price, sub: sub });
+    });
     // hide only the exact add-ons already booked (a bigger size stays available)
     var have = {};
     function key(n) { return String(n || "").toLowerCase().replace(/\s*\(\d+\)\s*$/, "").replace(/[^a-z0-9]+/g, " ").trim(); }
@@ -796,7 +800,7 @@
       '<div class="tp-enh__grid">' +
         '<div class="tp-card tp-enh__booked"><h4>Booked for your night</h4><ul>' + (booked.length ? booked.map(function (b) {
           return '<li><span class="tp-enh__check">' + icon("check") + '</span><span class="tp-enh__copy"><b>' + esc(b.name) + '</b><small>' + esc(b.sub) + '</small></span>' +
-            (b.price ? '<span class="tp-enh__price">' + money(b.price) + '</span>' : "") + '</li>';
+            (b.price ? '<span class="tp-enh__price' + (b.price < 0 ? " tp-enh__price--neg" : "") + '">' + (b.price < 0 ? "-" : "") + money(Math.abs(b.price)) + '</span>' : "") + '</li>';
         }).join("") : '<li class="tp-enh__empty">Your package details will show here.</li>') + '</ul></div>' +
         '<div class="tp-card tp-enh__add"><h4>Would you like to add any services to your night?</h4>' +
           (sugg.length ? '<div class="tp-enh__sugg"><p class="tp-enh__cat">Suggested services</p><ul class="tp-enh__menu">' + sugg.map(function (a) {

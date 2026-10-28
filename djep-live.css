@@ -19532,3 +19532,4 @@ a[href*="print_special"],
 .tp-enh__sugg .tp-enh__cat { margin-top: 4px !important; }
 .tp-enh__toggle { display: inline-flex; align-items: center; margin-top: 16px; min-height: 40px; padding: 0 18px; border-color: rgba(217, 8, 152, 0.6); }
 .tp-enh__toggle:hover { background: rgba(217, 8, 152, 0.12); }
+.tp-enh__booked .tp-enh__price--neg { color: #8ef0c4; }
