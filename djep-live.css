@@ -18616,3 +18616,19 @@ a[href*="print_special"],
     font-size: 0.84rem;
   }
 }
+
+/* Phones: full-width countdown + a bigger Add to calendar button */
+@media (max-width: 767px) {
+  .tp-count-row {
+    display: flex;
+    width: 100%;
+  }
+
+  .tp-count-row .tp-cal-btn,
+  .djep-home-event-details .tp-count-row .tp-cal-btn {
+    min-height: 50px;
+    font-size: 0.95rem;
+    gap: 10px;
+    border-radius: 14px;
+  }
+}
