@@ -2,6 +2,7 @@
    Tony Pre client portal extras (loaded from GitHub Pages)
    - Event countdown (Home, Plan My Event, Event Details)
    - Planning progress checklist (Home, Plan My Event)
+   - Special Songs page closed (special songs live in the planning form)
    - Related Files (quotes, gear rentals) shown in the Documents card
    Runs after the main portal script has rebuilt the page. Safe to load on
    every DJEP page: it only acts on /clients/ pages it recognizes.
@@ -90,16 +91,6 @@
     return answered;
   }
 
-  function specialSongCount(doc) {
-    if (!doc) return null;
-    var types = qsa(".djep-special_song_header", doc);
-    var picked = types.filter(function (h) {
-      var key = h.id.replace("special_song_header_div_", "");
-      return txt(qs("#song_div_" + key, doc)) || txt(qs("#artist_div_" + key, doc));
-    }).length;
-    return { picked: picked, total: types.length };
-  }
-
   function requestCount(doc) {
     if (!doc) return null;
     var n = 0;
@@ -131,14 +122,6 @@
         detail: d.form ? d.form + (d.form === 1 ? " answer saved" : " answers saved") : "Start with the basics",
         href: "planningforms.asp?action=edit_primary_planning_form&eventid=" + encodeURIComponent(eventId),
         state: d.form ? "go" : "todo"
-      },
-      {
-        title: "Special Songs",
-        n: d.special ? d.special.picked : 0,
-        status: !d.special || !d.special.picked ? "Not started" : d.special.picked >= d.special.total ? "Done" : "In progress",
-        detail: d.special ? d.special.picked + " of " + d.special.total + " picked" : "First dance and more",
-        href: "music.asp?action=special_songs&eventid=" + encodeURIComponent(eventId),
-        state: !d.special || !d.special.picked ? "todo" : d.special.picked >= d.special.total ? "done" : "go"
       },
       {
         title: "Song Requests",
@@ -184,15 +167,13 @@
     var id = encodeURIComponent(eventId);
     Promise.all([
       getDoc("planningforms.asp?action=view_primary_planning_form&eventid=" + id),
-      getDoc("music.asp?action=special_songs&eventid=" + id),
       getDoc("songrequests.asp?action=view_requests&eventid=" + id),
       getDoc("timeline.asp?eventid=" + id + "&action=view")
     ]).then(function (docs) {
       holder.innerHTML = progressHtml(eventId, {
         form: planningFormCount(docs[0]) || 0,
-        special: specialSongCount(docs[1]),
-        requests: requestCount(docs[2]) || 0,
-        timeline: timelineCount(docs[3]) || 0
+        requests: requestCount(docs[1]) || 0,
+        timeline: timelineCount(docs[2]) || 0
       });
       holder.classList.remove("tp-progress-holder--loading");
     }).catch(function () { holder.remove(); });
@@ -286,12 +267,24 @@
     }, 40);
   }
 
+  // Special songs are collected in the planning form, so the separate
+  // Special Songs page is closed: anyone landing there goes to Music.
+  function blockSpecialSongs() {
+    if (/\/clients\/(music|print)\.asp/.test(path) && /action=(special_songs|print_special)/i.test(location.search)) {
+      var id = param("eventid");
+      location.replace("music.asp" + (id ? "?eventid=" + encodeURIComponent(id) : ""));
+      return true;
+    }
+    return false;
+  }
+
   function start() {
     if (/\/clients\/home\.asp/.test(path)) homePage();
     else if (/\/clients\/planmyevent\.asp/.test(path)) planPage();
     else if (/\/clients\/eventdetails\.asp/.test(path)) detailsPage();
   }
 
+  if (blockSpecialSongs()) return;
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
 })();

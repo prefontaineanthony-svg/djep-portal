@@ -18180,3 +18180,13 @@ body.djep-planpage-ready .djep-plan-access-icon {
     transition: none;
   }
 }
+
+/* Special Songs are collected in the planning form, not a separate page.
+   Hide every way into the Special Songs page (Plan My Event tile, music page
+   button, print link). djep-extras.js also redirects the page itself. */
+a[href*="action=special_songs"],
+a[href*="print_special"],
+#music_selection_button_special_songs,
+.djep-plan-tool:has(a[href*="action=special_songs"]) {
+  display: none !important;
+}
