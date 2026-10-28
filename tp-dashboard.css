@@ -481,3 +481,25 @@
   .tp-enh__bar .tp-btn { min-height: 48px; }
   .tp-keys, .tp-sound { padding: 18px 16px; }
 }
+
+/* last waveform marker sits inside the card */
+.tp-wave__flag:last-of-type { transform: translateX(-100%); }
+.tp-wave__flag:last-of-type::after { left: auto; right: 8px; }
+
+/* hear my sound: link rows */
+.tp-sound__links { margin: 4px 0 0 !important; padding: 0 !important; list-style: none !important; }
+.tp-sound__links li { border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.tp-sound__links li:first-child { border-top: 0; }
+.tp-sound__links a {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+.tp-sound__links a span { font-size: 0.9rem; font-weight: 800; }
+.tp-sound__links a small { color: #9a8f9f; font-size: 0.76rem; }
+.tp-sound__links a i { color: #ff4fbf; font-style: normal; font-weight: 900; }
+.tp-sound__links a:hover span { color: #ff4fbf; }

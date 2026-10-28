@@ -787,7 +787,11 @@
     return '<section class="tp-card tp-sound" aria-label="Hear my sound">' +
       '<p class="tp-kicker">Hear my sound</p><h3 class="tp-sound__title">Get a feel for the vibe while you plan.</h3>' +
       '<p class="tp-sound__intro">' + esc(d.intro) + '</p>' +
-      '<div class="tp-meet__links">' + d.links.map(function (l) { return '<a href="' + esc(l[1]) + '" target="_blank" rel="noopener">' + esc(l[0]) + '</a>'; }).join("") + '</div>' +
+      '<ul class="tp-sound__links">' + d.links.map(function (l) {
+        return '<li><a href="' + esc(l[1]) + '" target="_blank" rel="noopener"><span>' + esc(l[0]) + '</span><small>' +
+          esc(/instagram/i.test(l[0]) ? "Clips from recent nights" : /spotify|apple/i.test(l[0]) ? "My original music" : "Full DJ mixes") +
+          '</small><i aria-hidden="true">&rarr;</i></a></li>';
+      }).join("") + '</ul>' +
       '<div class="tp-meet__actions"><a class="tp-btn" href="' + esc(d.meeting) + '" target="_blank" rel="noopener">Book a call with me</a>' +
       '<a class="tp-link" href="' + esc(d.website) + '" target="_blank" rel="noopener">Visit my website</a></div></section>';
   }
