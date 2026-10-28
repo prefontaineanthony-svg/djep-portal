@@ -17686,3 +17686,120 @@ html {
   background: var(--tp-pink) !important;
   border-color: var(--tp-pink) !important;
 }
+
+/* ============================================================================
+   CLIENT HOME welcome block ("Good evening, <name>")
+   Its own <style> comes from DJEP's home page text (light colors, Inter).
+   The #djep-content prefix outranks it, so nothing in DJEP has to change.
+   ============================================================================ */
+#djep-content .portal-welcome {
+  --ink: #fbf6fd;
+  --muted: #b3a5bd;
+  --line: rgba(255, 255, 255, 0.08);
+  --surface: #170e1e;
+  --surface-soft: #130b19;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  font-family: var(--djep-font-family) !important;
+  color: var(--ink);
+}
+
+#djep-content .portal-welcome .welcome-shell {
+  border: 1px solid rgba(217, 8, 152, 0.26);
+  background:
+    radial-gradient(560px 260px at 0% 0%, rgba(217, 8, 152, 0.22), transparent 70%),
+    radial-gradient(520px 260px at 100% 100%, rgba(122, 44, 255, 0.18), transparent 70%),
+    linear-gradient(180deg, #160d1d 0%, #0e0814 100%);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+#djep-content .portal-welcome .eyebrow {
+  color: var(--tp-champagne) !important;
+  letter-spacing: 0.22em !important;
+}
+
+#djep-content .portal-welcome .hero-title {
+  font-family: var(--djep-font-family) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.02em !important;
+  color: #fff !important;
+}
+
+#djep-content .portal-welcome .hero-title .brand,
+#djep-content .portal-welcome .hero-subtitle .brand {
+  color: #fff !important;
+}
+
+#djep-content .portal-welcome .hero-title .brand span {
+  color: var(--tp-pink-2) !important;
+  text-shadow: 0 0 18px rgba(217, 8, 152, 0.55), 0 0 42px rgba(217, 8, 152, 0.3);
+}
+
+#djep-content .portal-welcome .hero-subtitle {
+  color: var(--muted) !important;
+}
+
+#djep-content .portal-welcome .hero-chip {
+  border: 1px solid rgba(217, 8, 152, 0.35);
+  background: rgba(217, 8, 152, 0.1);
+}
+
+#djep-content .portal-welcome .hero-chip-label {
+  color: var(--tp-pink-2);
+}
+
+#djep-content .portal-welcome .hero-chip-value {
+  color: #f3e9f7 !important;
+}
+
+#djep-content .portal-welcome .btn {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+#djep-content .portal-welcome .btn:hover {
+  border-color: rgba(217, 8, 152, 0.6);
+  background: rgba(217, 8, 152, 0.14);
+  box-shadow: 0 10px 24px rgba(217, 8, 152, 0.22);
+}
+
+#djep-content .portal-welcome .btn .dot {
+  background: linear-gradient(135deg, #d90898, #7a2cff);
+  box-shadow: 0 0 12px rgba(217, 8, 152, 0.45);
+}
+
+#djep-content .portal-welcome .btn .label {
+  color: #fff !important;
+}
+
+#djep-content .portal-welcome .video-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0b0710;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.55);
+}
+
+#djep-content .portal-welcome .video-placeholder {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(217, 8, 152, 0.3), transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(122, 44, 255, 0.26), transparent 50%),
+    linear-gradient(135deg, #150c1c 0%, #0b0710 100%);
+}
+
+#djep-content .portal-welcome .video-placeholder-badge {
+  border-color: rgba(232, 211, 176, 0.35);
+  background: rgba(232, 211, 176, 0.08);
+  color: var(--tp-champagne);
+}
+
+#djep-content .portal-welcome .video-placeholder-text {
+  color: #b3a5bd;
+}
+
+#djep-content .portal-welcome .video-note {
+  color: var(--tp-champagne) !important;
+  letter-spacing: 0.14em !important;
+  font-weight: 700 !important;
+}
