@@ -18548,3 +18548,31 @@ a[href*="print_special"],
 .tp-meet__photo img {
   filter: none;
 }
+
+.tp-count-row .tp-cal-btn,
+.djep-home-event-details .tp-count-row .tp-cal-btn {
+  min-height: 44px;
+  align-self: stretch;
+}
+
+.tp-count-row { flex-wrap: nowrap; }
+
+@media (max-width: 479px) {
+  .tp-count-row .tp-countdown {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 9px;
+    padding: 8px 12px 8px 10px;
+  }
+
+  .tp-count-row .tp-countdown__num { font-size: 1.45rem; }
+  .tp-count-row .tp-countdown__label { font-size: 0.64rem; letter-spacing: 0.12em; }
+  .tp-count-row .tp-countdown__sub { font-size: 0.68rem; }
+
+  .tp-count-row .tp-cal-btn,
+  .djep-home-event-details .tp-count-row .tp-cal-btn {
+    flex: 0 0 auto;
+    padding: 0 12px;
+    font-size: 0.78rem;
+  }
+}
