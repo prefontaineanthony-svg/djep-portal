@@ -475,8 +475,16 @@
   .tp-wave__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tp-enh__menu { grid-template-columns: minmax(0, 1fr); }
   .tp-enh .tp-card { padding: 18px 16px; }
-  .tp-enh__menu li { flex-wrap: wrap; }
-  .tp-enh__menu li .tp-enh__copy { flex-basis: calc(100% - 80px); }
+  .tp-enh__menu li,
+  .tp-enh--all .tp-enh__menu li.tp-enh__more {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 8px;
+  }
+  .tp-enh__menu li.tp-enh__more { display: none; }
+  .tp-enh__menu li .tp-enh__copy { grid-column: 1 / -1; }
+  .tp-enh__menu li .tp-enh__price { text-align: left !important; }
+  .tp-enh__btn { min-height: 40px; padding: 0 16px; }
   .tp-enh__bar { flex-direction: column; align-items: stretch; }
   .tp-enh__bar .tp-btn { min-height: 48px; }
   .tp-keys, .tp-sound { padding: 18px 16px; }
