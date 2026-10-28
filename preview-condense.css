@@ -43,13 +43,25 @@
 #page_eventdetails .djep-card-action {
   grid-column: auto !important;
   margin: 0 !important;
-  padding: 14px 16px !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  border-radius: 14px !important;
-  background: rgba(255, 255, 255, 0.025) !important;
+  padding: 14px 0 0 !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 10px !important;
+}
+#page_eventdetails .djep-card-staff::before,
+#page_eventdetails .djep-card-action::before,
+#page_eventdetails .djep-staff-list::before,
+#page_eventdetails .djep-staff-member::before { display: none !important; }
+#page_eventdetails .djep-staff-list {
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 #page_eventdetails .djep-card-staff > .djep-titlebarsmall,
 #page_eventdetails .djep-card-action > .djep-titlebar {
