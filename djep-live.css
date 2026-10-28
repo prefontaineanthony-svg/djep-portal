@@ -17902,3 +17902,32 @@ body.djep-planpage-ready .djep-plan-access-icon {
 #djep-content table[border] {
   border-color: #33243d !important;
 }
+
+/* The portal script switches to the phone menu at 768px but the phone styles
+   stop at 767px, so at exactly 768 (iPad portrait) an unstyled menu bar showed
+   above the header. Desktop header + nav already work at that width. */
+@media (min-width: 768px) {
+  #djep-force-mobile-shell {
+    display: none !important;
+  }
+}
+
+/* Staffing: name sits in a pink pill instead of wrapping inside a 52px box */
+#page_eventdetails .djep-staff-member {
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  align-items: center !important;
+}
+
+#page_eventdetails .djep-staff-member-avatar {
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 34px !important;
+  padding: 0 14px !important;
+  white-space: nowrap !important;
+  border-radius: 999px !important;
+  background: rgba(217, 8, 152, 0.14) !important;
+  border: 1px solid rgba(217, 8, 152, 0.4) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
