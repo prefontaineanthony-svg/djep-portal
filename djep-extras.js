@@ -142,6 +142,19 @@
         state: d.timeline ? "go" : "todo"
       }
     ];
+    if (d.pay && d.pay.total) {
+      var pBal = d.pay.balance != null ? Math.max(0, d.pay.balance) : Math.max(0, d.pay.total - d.pay.paid);
+      var pPaid = Math.max(0, d.pay.total - pBal);
+      var pFull = pBal <= 0.004;
+      items.push({
+        title: "Payments",
+        status: pFull ? "Paid in full" : pPaid > 0 ? "In progress" : "Not started",
+        detail: pFull ? money(d.pay.total) + " paid. Thank you!" : money(pPaid) + " of " + money(d.pay.total) + " paid" +
+          (d.pay.nextDue ? ", next due " + fmtDate(d.pay.nextDue.date) : ""),
+        href: "makeapayment.asp?action=choose_payment_gateway&eventid=" + encodeURIComponent(eventId),
+        state: pFull ? "done" : pPaid > 0 ? "go" : "todo"
+      });
+    }
     var started = items.filter(function (i) { return i.state !== "todo"; }).length;
     var pct = Math.round((started / items.length) * 100);
     var head = started === 0 ? "Let's get planning" : started === items.length ? "Everything is underway" : "Nice progress";
@@ -170,14 +183,20 @@
     Promise.all([
       getDoc("planningforms.asp?action=view_primary_planning_form&eventid=" + id),
       getDoc("songrequests.asp?action=view_requests&eventid=" + id),
-      getDoc("timeline.asp?eventid=" + id + "&action=view")
+      getDoc("timeline.asp?eventid=" + id + "&action=view"),
+      eventInfo(eventId).catch(function () { return null; })
     ]).then(function (docs) {
       holder.innerHTML = progressHtml(eventId, {
         form: planningFormCount(docs[0]) || 0,
         requests: requestCount(docs[1]) || 0,
-        timeline: timelineCount(docs[2]) || 0
+        timeline: timelineCount(docs[2]) || 0,
+        pay: docs[3]
       });
       holder.classList.remove("tp-progress-holder--loading");
+      var pi = docs[3];
+      if (pi && pi.total > 0 && pi.balance != null && pi.balance <= 0.004 && !seen("tp-paid-" + eventId)) {
+        setTimeout(function () { confetti("Paid in full. Thank you!"); }, 300);
+      }
       var all = qsa(".tp-progress__item", holder);
       if (all.length && all.every(function (a) { return !/--todo/.test(a.className); }) && !seen("tp-allgo-" + eventId)) {
         setTimeout(function () { confetti("Every planning step is underway. Love it!"); }, 500);
@@ -346,6 +365,13 @@
 
   function calendarButton(id, mount, position) {
     if (!mount || qs(".tp-cal-btn", mount.parentElement || document)) return;
+    if (mount.classList && mount.classList.contains("tp-countdown")) {
+      var row = document.createElement("div");
+      row.className = "tp-count-row";
+      mount.parentNode.insertBefore(row, mount);
+      row.appendChild(mount);
+      mount = row; position = "beforeend";
+    }
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "tp-cal-btn";
@@ -465,19 +491,17 @@
           var html = countdownHtml(date, false);
           if (html) details.insertAdjacentHTML("beforeend", html);
         }
-        if (date && daysUntil(date) >= 0) {
-          var actions = qs(".djep-home-event-actions", card);
-          if (actions) calendarButton(id, actions, "beforeend");
-        }
+        var cdEl = details && qs(".tp-countdown", details);
+        if (date && daysUntil(date) >= 0 && cdEl) calendarButton(id, cdEl, "afterend");
         // full dashboard for the first upcoming event only (keeps Home fast)
         if (i === 0 && date && daysUntil(date) >= 0) {
           var panel = card.closest(".djep-home-events-panel") || card;
           var grid = document.createElement("div");
           grid.className = "tp-home-grid";
-          grid.innerHTML = '<div class="tp-slot tp-slot--progress"></div><div class="tp-slot tp-slot--pay"></div><div class="tp-slot tp-slot--road"></div><div class="tp-slot tp-slot--meet">' + meetHtml() + '</div>';
+          grid.innerHTML = '<div class="tp-slot tp-slot--progress"></div><div class="tp-slot tp-slot--road"></div><div class="tp-slot tp-slot--meet">' + meetHtml() + '</div>';
           panel.insertAdjacentElement("afterend", grid);
           loadProgress(id, qs(".tp-slot--progress", grid), "afterbegin");
-          loadEventCards(id, { payment: qs(".tp-slot--pay", grid), roadmap: qs(".tp-slot--road", grid) });
+          loadEventCards(id, { roadmap: qs(".tp-slot--road", grid) });
         }
       });
     });

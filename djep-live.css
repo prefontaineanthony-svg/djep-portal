@@ -18517,3 +18517,34 @@ a[href*="print_special"],
 @media (max-width: 479px) {
   .tp-pay__badge { padding: 6px 11px; font-size: 0.7rem; letter-spacing: 0.06em; }
 }
+
+/* Countdown + Add to calendar side by side */
+.tp-count-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.tp-count-row .tp-countdown {
+  margin-top: 0;
+}
+
+.tp-count-row .tp-cal-btn,
+.djep-home-event-details .tp-count-row .tp-cal-btn {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0 18px;
+}
+
+/* Home: roadmap full width (payments now live in Planning progress) */
+.tp-home-grid .tp-slot--road {
+  grid-column: 1 / -1;
+}
+
+/* Meet your DJ photo in full color */
+.tp-meet__photo img {
+  filter: none;
+}
