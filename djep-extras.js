@@ -392,14 +392,14 @@
   }
 
   // ---------------------------------------------------------- what's next
-  function roadmapHtml(eventDate, lock) {
+  function roadmapHtml(eventDate, lock, paidInFull) {
     var today = new Date(); today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     var steps = TP.roadmap.map(function (s) {
       var d = s.lock ? (lock || addDays(eventDate, -TP.lockDaysFallback)) : addDays(eventDate, -s.days);
       return { title: s.title, detail: s.detail, date: d };
     }).sort(function (a, b) { return a.date - b.date; });
     var nextIdx = -1;
-    steps.some(function (s, i) { if (s.date >= today) { nextIdx = i; return true; } return false; });
+    steps.some(function (s, i) { if (s.date >= today && !(paidInFull && /payment/i.test(s.title))) { nextIdx = i; return true; } return false; });
     // keep it short: the last finished step plus the next four
     var from = nextIdx === -1 ? Math.max(0, steps.length - 1) : Math.max(0, nextIdx - 1);
     steps = steps.slice(from, from + 5);
@@ -407,9 +407,10 @@
     return '<section class="tp-card tp-road" aria-label="What\'s next">' +
       '<p class="tp-kicker">What\'s next</p>' +
       '<ol class="tp-road__list">' + steps.map(function (s, i) {
-        var state = s.date < today ? "done" : i === nextIdx ? "next" : "later";
+        var paidStep = paidInFull && /payment/i.test(s.title);
+        var state = (s.date < today || paidStep) ? "done" : i === nextIdx ? "next" : "later";
         var n = daysUntil(s.date);
-        var when = state === "done" ? "Done" : n === 0 ? "Today" : n === 1 ? "Tomorrow" : "In " + n.toLocaleString("en-US") + " days";
+        var when = paidStep ? "Paid" : state === "done" ? "Done" : n === 0 ? "Today" : n === 1 ? "Tomorrow" : "In " + n.toLocaleString("en-US") + " days";
         return '<li class="tp-road__step tp-road__step--' + state + '">' +
           '<span class="tp-road__dot" aria-hidden="true"></span>' +
           '<div class="tp-road__text"><span class="tp-road__title">' + esc(s.title) + '</span>' +
@@ -445,7 +446,7 @@
         }
       } else if (opts.payment) opts.payment.remove();
       if (opts.roadmap && info.date) {
-        jobs.push(lockDate(id, info.date).then(function (lock) { opts.roadmap.innerHTML = roadmapHtml(info.date, lock); }));
+        jobs.push(lockDate(id, info.date).then(function (lock) { opts.roadmap.innerHTML = roadmapHtml(info.date, lock, info.total > 0 && info.balance != null && info.balance <= 0.004); }));
       } else if (opts.roadmap) opts.roadmap.remove();
       return Promise.all(jobs);
     }).catch(function () {});
