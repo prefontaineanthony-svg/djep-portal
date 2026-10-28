@@ -18632,3 +18632,48 @@ a[href*="print_special"],
     border-radius: 14px;
   }
 }
+
+/* ============================================================================
+   EVENT DETAILS tidy-up (2026-10-28)
+   Left: event info / staffing / request changes, then Documents.
+   Right: Payments card, then Financials. Columns top-aligned, even gaps.
+   ============================================================================ */
+#page_eventdetails > .djep-eventdetails-workspace {
+  align-items: start !important;
+}
+
+#page_eventdetails .djep-eventdetails-column {
+  row-gap: 20px !important;
+  align-content: start !important;
+}
+
+#page_eventdetails .djep-eventdetails-column > * {
+  grid-column: 1 / -1 !important;
+  margin: 0 !important;
+}
+
+#page_eventdetails .tp-docs-moved {
+  width: 100% !important;
+}
+
+.tp-slot--details { margin-bottom: 0; }
+
+/* the % sits right next to the number */
+.tp-pay__pct {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: nowrap;
+  gap: 1px;
+  line-height: 1;
+}
+
+.tp-pay__pct small { font-size: 0.85rem; margin: 0; }
+
+/* compact horizontal payment card on Event Details */
+.tp-slot--details .tp-card { padding: 18px 20px; }
+.tp-slot--details .tp-pay__body { grid-template-columns: 96px minmax(0, 1fr); gap: 18px; }
+.tp-slot--details .tp-pay__ring { width: 96px; height: 96px; }
+.tp-slot--details .tp-pay__pct { font-size: 1.45rem; }
+.tp-slot--details .tp-kicker { margin-bottom: 10px !important; }

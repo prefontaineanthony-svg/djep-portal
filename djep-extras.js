@@ -556,12 +556,20 @@
           if (daysUntil(date) >= 0) calendarButton(id, qs(".tp-countdown", meta.parentElement) || meta, "afterend");
         }
       }
-      var totalsCard = qs(".djep-card-totals") || qs(".djep-eventdetails-card-totals");
-      if (totalsCard && !qs(".tp-slot--pay")) {
+      // Tidy layout: Payments card on top of the right column, Documents under
+      // the event info in the left column so both columns line up.
+      var side = qs(".djep-eventdetails-column-side");
+      var mainCol = qs(".djep-eventdetails-column-main");
+      if (side && !qs(".tp-slot--pay")) {
         var slot = document.createElement("div");
         slot.className = "tp-slot tp-slot--pay tp-slot--details";
-        (totalsCard.closest(".djep-card-pricing, .djep-eventdetails-card-pricing") || totalsCard).insertAdjacentElement("beforebegin", slot);
+        side.insertBefore(slot, side.firstChild);
         loadEventCards(id, { payment: slot });
+      }
+      var docsCard = qs(".djep-card-documents");
+      if (mainCol && docsCard && docsCard.parentElement !== mainCol) {
+        docsCard.classList.add("tp-docs-moved");
+        mainCol.appendChild(docsCard);
       }
       rescueRelatedFiles(id);
     });
