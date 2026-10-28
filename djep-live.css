@@ -18499,3 +18499,16 @@ a[href*="print_special"],
     text-align: left;
   }
 }
+
+/* Narrow phones: status chip drops under the step name so the text gets the width */
+@media (max-width: 479px) {
+  .tp-progress__item {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 6px;
+  }
+
+  .tp-progress__status {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
