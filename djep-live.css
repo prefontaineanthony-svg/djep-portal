@@ -17814,8 +17814,8 @@ html {
 #djep-content .djep-music-browser-shell {
   position: relative;
   isolation: isolate;
-  outline: 2px solid #1b1023;
-  outline-offset: -2px;
+  outline: 2px solid #2a1c33 !important;
+  outline-offset: -2px !important;
 }
 
 #djep-content .djep-music-browser-shell::before {
