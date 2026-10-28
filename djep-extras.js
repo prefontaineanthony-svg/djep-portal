@@ -884,7 +884,7 @@
     return '<div class="tp-paypage">' +
       '<div class="tp-paypage__intro"><p class="tp-kicker">Payments</p><h2 class="tp-paypage__title">Your investment</h2>' +
       '<p class="tp-paypage__lead">' + esc(info.name || "Your event") + (info.date ? " · " + esc(fmtDate(info.date, true)) : "") + '</p></div>' +
-      '<div class="tp-paypage__top">' +
+      '<div class="tp-paypage__cols"><div class="tp-paypage__col">' +
         // summary
         '<section class="tp-card tp-paysum">' +
           '<div class="tp-paysum__label">Total for your night</div>' +
@@ -898,6 +898,14 @@
               (payHref ? '<a class="tp-paysum__pay" href="' + esc(payHref) + '">' + icon("card") + 'Pay with Venmo</a>' : "") +
               '<p class="tp-paysum__fine">Pay the next amount, a little extra, or the full ' + money(balance) + ' anytime. Your tracker updates once I receive it.</p>') +
         '</section>' +
+        '<section class="tp-card tp-hist"><h3 class="tp-plan__title">Payment history</h3>' +
+          (info.history.length ? '<ul class="tp-hist__list">' + info.history.map(function (h) {
+            return '<li><span class="tp-keys__tile"><small>' + esc(h.date.toLocaleDateString("en-US", { month: "short" })) + '</small><b>' + h.date.getDate() + '</b></span>' +
+              '<span class="tp-keys__copy"><b>' + esc(h.method) + '</b><small>' + esc(fmtDate(h.date)) + '</small></span>' +
+              '<span class="tp-hist__amt' + (h.refund ? " tp-hist__amt--refund" : "") + '">' + (h.refund ? "-" : "") + money(h.amount) + '</span></li>';
+          }).join("") + '</ul>' : '<p class="tp-hist__empty">No payments yet. Your first one will show up here.</p>') +
+        '</section>' +
+      '</div><div class="tp-paypage__col">' +
         // plan
         '<section class="tp-card tp-plan">' +
           '<h3 class="tp-plan__title">Payment plan</h3>' +
@@ -910,22 +918,13 @@
           }).join("") + '</ol>' +
           '<p class="tp-plan__note">' + (retainer ? "The " + retPct + "% retainer secures your date. " : "") + "The remaining balance is due " + TP.finalPaymentDays + " days before your event. Questions about your plan? <a href=\"contact.asp\">Message me</a>.</p>" +
         '</section>' +
-      '</div>' +
-      '<div class="tp-paypage__bottom">' +
-        '<section class="tp-card tp-hist"><h3 class="tp-plan__title">Payment history</h3>' +
-          (info.history.length ? '<ul class="tp-hist__list">' + info.history.map(function (h) {
-            return '<li><span class="tp-keys__tile"><small>' + esc(h.date.toLocaleDateString("en-US", { month: "short" })) + '</small><b>' + h.date.getDate() + '</b></span>' +
-              '<span class="tp-keys__copy"><b>' + esc(h.method) + '</b><small>' + esc(fmtDate(h.date)) + '</small></span>' +
-              '<span class="tp-hist__amt' + (h.refund ? " tp-hist__amt--refund" : "") + '">' + (h.refund ? "-" : "") + money(h.amount) + '</span></li>';
-          }).join("") + '</ul>' : '<p class="tp-hist__empty">No payments yet. Your first one will show up here.</p>') +
-        '</section>' +
         '<section class="tp-card tp-feebox"><h3 class="tp-plan__title">What\'s included</h3><ul class="tp-feebox__list">' +
           fee.map(function (f) {
             return '<li><span class="tp-keys__copy"><b>' + esc(f.name) + '</b><small>' + esc(f.kind) + '</small></span><span class="tp-feebox__price' + (f.price < 0 ? " tp-feebox__price--neg" : "") + '">' + (f.price == null ? "" : (f.price < 0 ? "-" : "") + money(Math.abs(f.price))) + '</span></li>';
           }).join("") +
           '<li class="tp-feebox__total"><span>Total</span><span>' + money(total) + '</span></li>' +
         '</ul><a class="tp-link" href="eventdetails.asp?eventid=' + encodeURIComponent(id) + '">See event details</a></section>' +
-      '</div>' +
+      '</div></div>' +
     '</div>';
   }
 

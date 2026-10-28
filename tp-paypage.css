@@ -153,3 +153,9 @@
 .tp-paysum__label { font-size: 0.7rem !important; }
 .tp-paysum__total { margin: 6px 0 14px; color: #fff; font-size: 2.6rem !important; font-weight: 900; line-height: 1 !important; }
 @media (max-width: 767px) { .tp-paysum__total { font-size: 2.2rem !important; } }
+
+/* two stacked columns: summary + history | plan + breakdown */
+.tp-paypage__cols { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.tp-paypage__col { display: grid; gap: 18px; }
+@media (max-width: 900px) { .tp-paypage__cols { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 767px) { .tp-paypage__cols, .tp-paypage__col { gap: 14px; } }
