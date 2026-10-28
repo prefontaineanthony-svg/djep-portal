@@ -400,6 +400,10 @@
     }).sort(function (a, b) { return a.date - b.date; });
     var nextIdx = -1;
     steps.some(function (s, i) { if (s.date >= today) { nextIdx = i; return true; } return false; });
+    // keep it short: the last finished step plus the next four
+    var from = nextIdx === -1 ? Math.max(0, steps.length - 1) : Math.max(0, nextIdx - 1);
+    steps = steps.slice(from, from + 5);
+    nextIdx = nextIdx === -1 ? -1 : nextIdx - from;
     return '<section class="tp-card tp-road" aria-label="What\'s next">' +
       '<p class="tp-kicker">What\'s next</p>' +
       '<ol class="tp-road__list">' + steps.map(function (s, i) {
