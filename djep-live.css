@@ -18591,3 +18591,28 @@ a[href*="print_special"],
     gap: 6px;
   }
 }
+
+/* Phones: Add to calendar sits under the countdown */
+@media (max-width: 767px) {
+  .tp-count-row {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .tp-count-row .tp-countdown {
+    flex: 0 0 auto;
+  }
+
+  .tp-count-row .tp-cal-btn,
+  .djep-home-event-details .tp-count-row .tp-cal-btn {
+    max-width: none;
+    width: 100%;
+    min-height: 42px;
+    white-space: nowrap;
+    padding: 0 16px;
+    font-size: 0.84rem;
+  }
+}
