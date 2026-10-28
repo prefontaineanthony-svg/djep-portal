@@ -18468,3 +18468,34 @@ a[href*="print_special"],
 @media (prefers-reduced-motion: reduce) {
   .tp-toast { animation: none; }
 }
+
+/* Extras always read left-aligned, even inside centered DJEP panels */
+.tp-progress,
+.tp-card,
+.tp-progress *,
+.tp-card * {
+  text-align: left;
+}
+
+.tp-road__when,
+.tp-road__when * {
+  text-align: right;
+}
+
+.tp-pay__pct,
+.tp-btn,
+.tp-cal-btn {
+  text-align: center;
+}
+
+.tp-plan-grid {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+@media (max-width: 767px) {
+  .tp-road__when,
+  .tp-road__when * {
+    text-align: left;
+  }
+}
