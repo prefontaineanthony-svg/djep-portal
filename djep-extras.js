@@ -278,8 +278,12 @@
       { name: "CO2 Handheld Cannon", price: 400, note: "I fire it into the crowd at peak moments", family: ["CO2 Handheld Canon"] },
       { name: "Dancing on a Cloud", price: 500, note: "A low cloud rolls across the floor for your first dance", family: ["Dancing on a Cloud"] },
       { name: "Cold Sparkler Fountains", price: 500, note: "Indoor-safe sparks for entrances and the last dance", family: ["Cold Sparkler Fountains"] },
-      { name: "Photo Booth", price: 750, note: "Open air, social or A.I. booths", family: ["Deluxe Social Booth", "Premium Open Air Photobooth", "A.I. Generation Photobooth"] }
+      { name: "Photo Booth", price: 750, note: "Open air, social or A.I. booths", family: ["Deluxe Social Booth", "Premium Open Air Photobooth", "A.I. Generation Photobooth"] },
+      // backups, used only when one of the six above is already booked
+      { name: "CO2 Stationary Jets", price: 500, note: "Big cryo blasts right on the drop", family: ["CO2 Stationary Jets"] },
+      { name: "Motion Graphic Monogram", price: 350, note: "Your initials, animated in light", family: ["Motion Graphic Monogram"] }
     ],
+    suggestedCount: 6,
     addonDeadlineDays: 30, // matches the 30-day services deadline email
     finalPaymentDays: 60   // final balance due this many days before the event
   };
@@ -781,7 +785,7 @@
     var avail = TP.addons.filter(function (a) { return !have[key(a.match || a.name)] && !have[key(a.name)]; });
     var cats = [];
     avail.forEach(function (a) { if (cats.indexOf(a.cat) === -1) cats.push(a.cat); });
-    var sugg = TP.suggested.filter(function (g) { return !g.family.some(function (f) { return have[key(f)]; }); });
+    var sugg = TP.suggested.filter(function (g) { return !g.family.some(function (f) { return have[key(f)]; }); }).slice(0, TP.suggestedCount);
     var deadline = addDays(info.date, -TP.addonDeadlineDays);
     var closed = todayStart() > deadline;
     var priceTxt = function (a) { return a.price == null ? "Ask me" : (a.from ? "From " : "") + money(a.price); };
