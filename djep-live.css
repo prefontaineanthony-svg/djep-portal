@@ -19315,8 +19315,7 @@ a[href*="print_special"],
 }
 
 /* last waveform marker sits inside the card */
-.tp-wave__flag--last { transform: translateX(-100%); }
-.tp-wave__flag--last::after { left: auto; right: 8px; }
+.tp-wave__flag--last { transform: translateX(-50%); }
 
 /* hear my sound: link rows */
 .tp-sound__links { margin: 4px 0 0 !important; padding: 0 !important; list-style: none !important; }
@@ -19509,3 +19508,18 @@ a[href*="print_special"],
   .tp-hist { order: 3; }
   .tp-feebox { order: 4; }
 }
+
+/* add-on menu categories (2026-10-28) */
+.tp-enh__cat {
+  margin: 16px 0 2px !important;
+  color: #e8d3b0 !important;
+  font-size: 0.66rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+}
+.tp-enh__add h4 + .tp-enh__cat { margin-top: 4px !important; }
+.tp-enh__menu + .tp-enh__cat { padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.12); }
+.tp-enh__menu li.tp-enh__more { display: flex; }
+/* the drop: "Let's dance" flag glows */
+.tp-wave__flag--last { box-shadow: 0 0 16px rgba(255, 79, 191, 0.7); }

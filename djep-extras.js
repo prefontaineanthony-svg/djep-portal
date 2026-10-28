@@ -244,25 +244,31 @@
       email: "anthony@thetonypre.com",
       instagram: "thetonypre"
     },
-    // Home "Add to your night" menu. Prices from DJEP > Add Ons (2026-10-28).
-    // price: null shows "Ask me". featured: shown before "Show all".
+    // Home "Add to your night" menu: every add-on in DJEP > Add Ons, exact
+    // names and prices (checked 2026-10-28). price: null shows "Ask me"
+    // ($0 in DJEP because the price depends on the event).
     addons: [
-      { name: "Dancing on a Cloud", price: 500, note: "A low cloud rolls across the floor for your first dance", featured: true },
-      { name: "Cold Sparkler Fountains", price: 500, note: "Indoor-safe sparks for entrances and the last dance", featured: true },
-      { name: "CO2 Stationary Jets", price: 500, note: "Big cryo blasts right on the drop", featured: true },
-      { name: "CO2 Handheld Cannon", match: "CO2 Handheld Canon", price: 400, note: "I fire it into the crowd at peak moments", featured: true },
-      { name: "Motion Graphic Monogram", price: 350, note: "Your initials, animated in light", featured: true },
-      { name: "Wireless Color Uplighting", match: "Wireless Color Uplighting (20 Fixtures)", price: 900, from: true, note: "Wash the whole room in your colors", featured: true },
-      { name: "Premium Open Air Photobooth", price: 1250, note: "Studio-quality photos, unlimited sessions", featured: true },
-      { name: "Audio Guest Book", price: null, note: "Voice messages from your guests to keep forever", featured: true },
-      { name: "Intelligent Moving Heads", match: "Intelligent Moving Head (2 Fixtures)", price: 750, from: true, note: "Club-style moving lights over the dance floor" },
-      { name: "LED Dance Floor 360 Tubes", match: "LED Dance Floor 360 Tubes (4 Fixtures)", price: 300, from: true, note: "Glowing light tubes framing the floor" },
-      { name: "Dance Floor Wash", price: 250, note: "A color wash over the whole dance floor" },
-      { name: "Deluxe Social Booth", price: 750, note: "Instant shareable photos and boomerangs" },
-      { name: "A.I. Generation Photobooth", price: 1500, note: "AI-styled portraits your guests will talk about" },
-      { name: "Ceremony & Prelude Music", price: null, note: "Sound, mics and music for your ceremony" },
-      { name: "Satellite Speaker for Cocktail", price: 150, note: "Music for a separate cocktail space" },
-      { name: "Wireless Zone Speaker", price: 250, note: "Extra sound wherever guests gather" }
+      { cat: "Special effects", name: "Dancing on a Cloud", price: 500, note: "A low cloud rolls across the floor for your first dance" },
+      { cat: "Special effects", name: "Cold Sparkler Fountains", price: 500, note: "Indoor-safe sparks for entrances and the last dance" },
+      { cat: "Special effects", name: "CO2 Stationary Jets", price: 500, note: "Big cryo blasts right on the drop" },
+      { cat: "Special effects", name: "CO2 Handheld Cannon", match: "CO2 Handheld Canon", price: 400, note: "I fire it into the crowd at peak moments" },
+      { cat: "Lighting", name: "Wireless Color Uplighting (20 Fixtures)", price: 900, note: "Wash the room in your colors" },
+      { cat: "Lighting", name: "Wireless Color Uplighting (30 Fixtures)", price: 1200, note: "Full-room color for larger spaces" },
+      { cat: "Lighting", name: "Intelligent Moving Head (2 Fixtures)", price: 750, note: "Club-style moving lights over the dance floor" },
+      { cat: "Lighting", name: "Intelligent Moving Head (4 Fixtures)", price: 1250, note: "The full club light show" },
+      { cat: "Lighting", name: "LED Dance Floor 360 Tubes (4 Fixtures)", price: 300, note: "Glowing light tubes framing the floor" },
+      { cat: "Lighting", name: "LED Dance Floor 360 Tubes (8 Fixtures)", price: 500, note: "A full ring of light tubes around the floor" },
+      { cat: "Lighting", name: "Dance Floor Wash", price: 250, note: "A color wash over the whole dance floor" },
+      { cat: "Lighting", name: "Lighting Programming", price: 250, note: "Lights cued to your big moments and songs" },
+      { cat: "Lighting", name: "Motion Graphic Monogram", price: 350, note: "Your initials, animated in light" },
+      { cat: "Photo booths", name: "Premium Open Air Photobooth", price: 1250, note: "Studio-quality photos, unlimited sessions" },
+      { cat: "Photo booths", name: "Deluxe Social Booth", price: 750, note: "Instant shareable photos and boomerangs" },
+      { cat: "Photo booths", name: "A.I. Generation Photobooth", price: 1500, note: "AI-styled portraits your guests will talk about" },
+      { cat: "Music and sound", name: "Ceremony & Prelude Music", price: null, note: "Sound, mics and music for your ceremony" },
+      { cat: "Music and sound", name: "Ceremony Microphone Only", price: 250, note: "A mic for your officiant and readers" },
+      { cat: "Music and sound", name: "Satellite Speaker for Cocktail", price: 150, note: "Music for a separate cocktail space" },
+      { cat: "Music and sound", name: "Wireless Zone Speaker", price: 250, note: "Extra sound wherever guests gather" },
+      { cat: "Music and sound", name: "Audio Guest Book", price: null, note: "Voice messages from your guests to keep forever" }
     ],
     addonDeadlineDays: 30, // matches the 30-day services deadline email
     finalPaymentDays: 60   // final balance due this many days before the event
@@ -405,26 +411,42 @@
   function icsDay(d) { function p(n) { return (n < 10 ? "0" : "") + n; } return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()); }
   function icsEsc(s) { return String(s || "").replace(/\\/g, "\\\\").replace(/([,;])/g, "\\$1").replace(/\n/g, "\\n"); }
 
+  // Key planning dates (not the event day itself, per Tony 2026-10-28).
+  function planningDates(info, lock) {
+    var ev = info.date, out = [];
+    var portal = "https://thedjforms.com/clientlogon.asp?djidnumber=28795";
+    var full = isPaidFull(info);
+    out.push({ key: "creative", date: addDays(ev, -122), title: "Schedule your creative meeting with Tony Pre",
+      desc: "Time to book your creative meeting. We'll map out your music, reception flow, special moments and formalities.\nBook here: " + TP.dj.meeting + "\nYour portal: " + portal });
+    if (!full) out.push({ key: "payment", date: addDays(ev, -TP.finalPaymentDays), title: "Final payment due (Tony Pre)",
+      desc: "Your remaining balance" + (info.balance > 0 ? " of " + money(info.balance) : "") + " is due today. Pay anytime in your portal: " + portal });
+    out.push({ key: "final", date: addDays(ev, -45), title: "Schedule your final planning meeting with Tony Pre",
+      desc: "Time to book your final planning meeting. We'll lock in every detail, A to Z.\nBook here: " + TP.dj.meeting + "\nYour portal: " + portal });
+    out.push({ key: "addons", date: addDays(ev, -TP.addonDeadlineDays), title: "Add-on deadline (Tony Pre)",
+      desc: "Last day to add enhancements like uplighting, sparklers or a photo booth. See them all on your portal home page: " + portal });
+    var lk = lock || addDays(ev, -TP.lockDaysFallback);
+    out.push({ key: "lock", date: lk, title: "Planning forms lock tonight (Tony Pre)",
+      desc: "Last day to make changes in your planning forms, music and timeline. They lock at 11:59 PM. " + portal });
+    var today = todayStart();
+    return out.filter(function (d) { return d.date >= today; }).sort(function (a, b) { return a.date - b.date; });
+  }
+
   function buildIcs(info, lock, id) {
     var now = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
-    var lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Tony Pre Events//Client Portal//EN", "CALSCALE:GREGORIAN"];
-    var endDay = info.date;
-    if (info.start && info.end && icsTime(info.date, info.end) <= icsTime(info.date, info.start)) endDay = addDays(info.date, 1);
-    lines.push("BEGIN:VEVENT", "UID:tp-event-" + id + "@thetonypre.com", "DTSTAMP:" + now,
-      info.start ? "DTSTART:" + icsTime(info.date, info.start) : "DTSTART;VALUE=DATE:" + icsDay(info.date),
-      info.start ? "DTEND:" + icsTime(endDay, info.end || info.start) : "DTEND;VALUE=DATE:" + icsDay(addDays(info.date, 1)),
-      "SUMMARY:" + icsEsc((info.name || "Our event") + " with Tony Pre"),
-      "LOCATION:" + icsEsc([info.venue, info.address].filter(Boolean).join(", ")),
-      "DESCRIPTION:" + icsEsc("Your DJ and event host: Tony Pre\nClient portal: https://thedjforms.com/clientlogon.asp?djidnumber=28795"),
-      "END:VEVENT");
-    if (lock) lines.push("BEGIN:VEVENT", "UID:tp-lock-" + id + "@thetonypre.com", "DTSTAMP:" + now,
-      "DTSTART;VALUE=DATE:" + icsDay(lock), "DTEND;VALUE=DATE:" + icsDay(addDays(lock, 1)),
-      "SUMMARY:" + icsEsc("Last day to update planning forms (Tony Pre)"),
-      "DESCRIPTION:" + icsEsc("Planning forms lock at 11:59 PM tonight. https://thedjforms.com/clientlogon.asp?djidnumber=28795"),
-      "BEGIN:VALARM", "TRIGGER:-P2D", "ACTION:DISPLAY", "DESCRIPTION:Planning forms lock in 2 days", "END:VALARM",
-      "END:VEVENT");
+    var lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Tony Pre Events//Client Portal//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "X-WR-CALNAME:" + icsEsc((info.name || "Your event") + " planning dates")];
+    var dates = planningDates(info, lock);
+    dates.forEach(function (d) {
+      lines.push("BEGIN:VEVENT", "UID:tp-" + d.key + "-" + id + "@thetonypre.com", "DTSTAMP:" + now,
+        "DTSTART;VALUE=DATE:" + icsDay(d.date), "DTEND;VALUE=DATE:" + icsDay(addDays(d.date, 1)),
+        "SUMMARY:" + icsEsc(d.title),
+        "DESCRIPTION:" + icsEsc(d.desc),
+        "TRANSP:TRANSPARENT",
+        "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc(d.title + " tomorrow"), "END:VALARM",
+        "END:VEVENT");
+    });
     lines.push("END:VCALENDAR");
-    return lines.join("\r\n");
+    return { text: lines.join("\r\n"), count: dates.length };
   }
 
   function calendarButton(id, mount, position) {
@@ -447,12 +469,14 @@
         if (!info || !info.date) throw new Error("no date");
         return lockDate(id, info.date).then(function (lock) {
           var ics = buildIcs(info, lock, id);
+          if (!ics.count) { toast("All of your planning dates have passed. See you on the dance floor!"); return; }
           var ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-          if (ios) { location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(ics); return; }
+          if (ios) { location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(ics.text); return; }
           var a = document.createElement("a");
-          a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
-          a.download = "tony-pre-event.ics";
+          a.href = URL.createObjectURL(new Blob([ics.text], { type: "text/calendar" }));
+          a.download = "tony-pre-planning-dates.ics";
           document.body.appendChild(a); a.click(); a.remove();
+          toast("Your " + ics.count + " planning dates are ready. Open the file to add them to your calendar.");
         });
       }).catch(function () { toast("Sorry, the calendar file could not be created. Please try again."); })
         .then(function () { btn.disabled = false; });
@@ -666,15 +690,16 @@
     return { steps: steps, pct: pct };
   }
 
+  var WAVE_DROP = 0.84; // where the big waveform starts (event day)
   function waveSvg(pct) {
     var N = 120, W = 1000, H = 120, bw = W / N, out = [];
     for (var i = 0; i < N; i++) {
       var x = i / (N - 1);
       var noise = (Math.sin(i * 12.9898) * 43758.5453) % 1; noise = Math.abs(noise);
-      var build = 0.12 + 0.62 * Math.pow(x, 1.7);              // the track builds toward the drop
-      var dip = x > 0.84 && x < 0.9 ? 0.45 : 1;                  // little breakdown before the drop
+      var build = 0.12 + 0.62 * Math.pow(x / WAVE_DROP, 1.7);  // the track builds toward the drop
+      var dip = x > WAVE_DROP - 0.07 && x < WAVE_DROP ? 0.3 : 1; // breakdown right before the drop
       var amp = Math.min(1, (build + noise * 0.32) * dip);
-      if (x > 0.9) amp = Math.min(1, 0.78 + noise * 0.22);       // the drop
+      if (x >= WAVE_DROP) amp = Math.min(1, 0.8 + noise * 0.2);  // the drop = event day
       var h = Math.max(6, amp * (H - 8));
       out.push('<rect x="' + (i * bw + 1).toFixed(1) + '" y="' + ((H - h) / 2).toFixed(1) + '" width="' + (bw - 3).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="2" class="' + (x <= pct ? "on" : "off") + '"/>');
     }
@@ -693,10 +718,10 @@
       '<p class="tp-wave__pct">You\'re <b>' + pctTxt + '%</b> of the way to the drop.</p></div>' +
       '<div class="tp-wave__track">' +
         j.steps.map(function (s, i) {
-          return '<span class="tp-wave__flag tp-wave__flag--' + s.state + (i === j.steps.length - 1 ? " tp-wave__flag--last" : i === 0 ? " tp-wave__flag--first" : "") + '" style="left:' + (s.pos * 100).toFixed(2) + '%">' + (i < 9 ? "0" : "") + (i + 1) + '</span>';
+          return '<span class="tp-wave__flag tp-wave__flag--' + s.state + (i === j.steps.length - 1 ? " tp-wave__flag--last" : i === 0 ? " tp-wave__flag--first" : "") + '" style="left:' + (s.pos * WAVE_DROP * 100).toFixed(2) + '%">' + (i < 9 ? "0" : "") + (i + 1) + '</span>';
         }).join("") +
-        waveSvg(j.pct) +
-        '<span class="tp-wave__head-line" style="left:' + (j.pct * 100).toFixed(2) + '%"></span>' +
+        waveSvg(j.pct * WAVE_DROP) +
+        '<span class="tp-wave__head-line" style="left:' + (j.pct * WAVE_DROP * 100).toFixed(2) + '%"></span>' +
       '</div>' +
       '<ol class="tp-wave__steps" style="--n:' + j.steps.length + '">' + j.steps.map(function (s, i) {
         return '<li class="tp-wave__step tp-wave__step--' + s.state + '"><div class="tp-wave__steptop"><span class="tp-wave__num">' + (i < 9 ? "0" : "") + (i + 1) + '</span>' +
@@ -739,9 +764,13 @@
     var booked = [];
     if (info.pkg) booked.push({ name: info.pkg.name, price: info.pkg.price, sub: "Your package" });
     info.items.forEach(function (it) { if (!isTravelOrDiscount(it.name)) booked.push({ name: it.name.replace(/\s*\(\d+\)\s*$/, ""), price: it.price, sub: "Enhancement" }); });
+    // hide only the exact add-ons already booked (a bigger size stays available)
     var have = {};
-    info.items.forEach(function (it) { have[family(it.name)] = 1; });
-    var avail = TP.addons.filter(function (a) { return !have[family(a.match || a.name)] && !have[family(a.name)]; });
+    function key(n) { return String(n || "").toLowerCase().replace(/\s*\(\d+\)\s*$/, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+    info.items.forEach(function (it) { have[key(it.name)] = 1; });
+    var avail = TP.addons.filter(function (a) { return !have[key(a.match || a.name)] && !have[key(a.name)]; });
+    var cats = [];
+    avail.forEach(function (a) { if (cats.indexOf(a.cat) === -1) cats.push(a.cat); });
     var deadline = addDays(info.date, -TP.addonDeadlineDays);
     var closed = todayStart() > deadline;
     var priceTxt = function (a) { return a.price == null ? "Ask me" : (a.from ? "From " : "") + money(a.price); };
@@ -755,12 +784,13 @@
             (b.price ? '<span class="tp-enh__price">' + money(b.price) + '</span>' : "") + '</li>';
         }).join("") : '<li class="tp-enh__empty">Your package details will show here.</li>') + '</ul></div>' +
         '<div class="tp-card tp-enh__add"><h4>Add to your night</h4>' +
-          '<ul class="tp-enh__menu">' + avail.map(function (a) {
-            return '<li class="' + (a.featured ? "" : "tp-enh__more") + '"><span class="tp-enh__copy"><b>' + esc(a.name) + '</b><small>' + esc(a.note) + '</small></span>' +
-              '<span class="tp-enh__price">' + esc(priceTxt(a)) + '</span>' +
-              '<button type="button" class="tp-enh__btn" aria-pressed="false" data-name="' + esc(a.name) + '"' + (closed ? " disabled" : "") + '>+ Add</button></li>';
-          }).join("") + '</ul>' +
-          (avail.some(function (a) { return !a.featured; }) ? '<button type="button" class="tp-enh__toggle">Show all enhancements</button>' : "") +
+          cats.map(function (c) {
+            return '<p class="tp-enh__cat">' + esc(c) + '</p><ul class="tp-enh__menu">' + avail.filter(function (a) { return a.cat === c; }).map(function (a) {
+              return '<li><span class="tp-enh__copy"><b>' + esc(a.name) + '</b><small>' + esc(a.note) + '</small></span>' +
+                '<span class="tp-enh__price">' + esc(priceTxt(a)) + '</span>' +
+                '<button type="button" class="tp-enh__btn" aria-pressed="false" data-name="' + esc(a.name) + '"' + (closed ? " disabled" : "") + '>+ Add</button></li>';
+            }).join("") + '</ul>';
+          }).join("") +
           '<div class="tp-enh__bar" hidden><span class="tp-enh__count"></span><a class="tp-btn tp-enh__send" href="#">Send to Tony</a></div>' +
         '</div>' +
       '</div></section>';
