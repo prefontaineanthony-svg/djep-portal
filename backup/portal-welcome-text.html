@@ -1,0 +1,273 @@
+<style type="text/css">.portal-welcome{
+  --ink:#101729;
+  --muted:#5f6880;
+  --line:#d8dfeb;
+  --surface:#ffffff;
+  --surface-soft:#f7f9fc;
+  --shadow:0 12px 28px rgba(17,26,46,.06);
+  font-family:"Inter","Segoe UI","Helvetica Neue",Arial,sans-serif !important;
+  color:var(--ink);
+  max-width:none;
+  margin:0;
+}
+
+.portal-welcome .welcome-shell{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);
+  gap:24px;
+  align-items:center;
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:28px;
+  background:linear-gradient(180deg,#fbfcff 0%,#f7f9fc 100%);
+  box-shadow:var(--shadow);
+}
+
+.portal-welcome .eyebrow{
+  margin:0 0 12px !important;
+  color:#516079 !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+}
+
+.portal-welcome .hero-title{
+  margin:0 0 10px !important;
+  font-size:54px !important;
+  line-height:1.01 !important;
+  letter-spacing:-0.04em !important;
+  font-weight:800 !important;
+  color:var(--ink) !important;
+}
+
+/* Greeting + name use the same dark ink color as the rest of the title
+   so the welcome block stays brand-neutral. */
+.portal-welcome .hero-title .brand,
+.portal-welcome .hero-subtitle .brand{
+  color:var(--ink) !important;
+}
+
+.portal-welcome .hero-subtitle{
+  margin:0 !important;
+  max-width:620px;
+  color:var(--muted) !important;
+  font-size:18px !important;
+  line-height:1.52 !important;
+  font-weight:500 !important;
+}
+
+.portal-welcome .hero-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:18px 0 0;
+}
+
+.portal-welcome .hero-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:36px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#eef2f8;
+}
+
+.portal-welcome .hero-chip-label{
+  color:#738199;
+  font-size:11px !important;
+  font-weight:800 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+}
+
+.portal-welcome .hero-chip-value{
+  color:#243049 !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+}
+
+.portal-welcome .hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:20px;
+}
+
+.portal-welcome .btn{
+  min-height:46px;
+  padding:0 16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#fff;
+  color:#1f2433 !important;
+  text-decoration:none !important;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 6px 14px rgba(17,26,46,.05);
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+}
+
+.portal-welcome .btn:hover{
+  border-color:#98a2b3;
+  background:#fff;
+  box-shadow:0 10px 18px rgba(52,64,84,.12);
+  transform:translateY(-1px);
+}
+
+/* + icons stay brand-neutral (dark slate) so the welcome card looks
+   the same regardless of the portal's brand color. */
+.portal-welcome .btn .dot{
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#1f2937,#101729);
+  color:#fff;
+  font-weight:800;
+  font-size:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 22px;
+}
+
+.portal-welcome .btn .label{
+  color:#1f2433 !important;
+  font-size:14px !important;
+  font-weight:700 !important;
+  line-height:1.2 !important;
+}
+
+.portal-welcome .video-panel{
+  display:grid;
+  gap:12px;
+}
+
+.portal-welcome .video-wrap{
+  overflow:hidden;
+  border:1px solid #c7d0df;
+  border-radius:22px;
+  background:#0f172a;
+  box-shadow:0 14px 30px rgba(17,26,46,.12);
+}
+
+.portal-welcome .video-placeholder{
+  display:grid;
+  place-items:center;
+  aspect-ratio:16/9;
+  width:100%;
+  padding:24px;
+  background:
+    radial-gradient(circle at top left, rgba(102,112,133,.14), transparent 26%),
+    linear-gradient(135deg, #1f2937 0%, #334155 100%);
+  color:#ffffff;
+  text-align:center;
+}
+
+.portal-welcome .video-placeholder-inner{
+  display:grid;
+  gap:8px;
+  justify-items:center;
+}
+
+.portal-welcome .video-placeholder-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:28px;
+  padding:0 12px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#e5e7eb;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.portal-welcome .video-placeholder-title{
+  margin:0;
+  color:#ffffff;
+  font-size:22px;
+  font-weight:800;
+  line-height:1.1;
+  letter-spacing:-.03em;
+}
+
+.portal-welcome .video-placeholder-text{
+  margin:0;
+  max-width:320px;
+  color:#cbd5e1;
+  font-size:14px;
+  line-height:1.5;
+}
+
+.portal-welcome .video-note{
+  margin:0 !important;
+  color:var(--muted) !important;
+  font-size:13px !important;
+  line-height:1.5 !important;
+}
+
+@media (max-width:980px){
+  .portal-welcome .welcome-shell{ grid-template-columns:1fr; }
+}
+
+@media (max-width:640px){
+  .portal-welcome .welcome-shell{
+    padding:18px;
+    gap:18px;
+    border-radius:22px;
+  }
+
+  .portal-welcome .hero-title{
+    font-size:38px !important;
+    line-height:1.04 !important;
+  }
+
+  .portal-welcome .hero-subtitle{
+    font-size:16px !important;
+  }
+
+  .portal-welcome .hero-actions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .portal-welcome .btn{
+    width:100%;
+    justify-content:flex-start;
+  }
+}
+</style>
+<div class="portal-welcome">
+	<div class="welcome-shell">
+		<div class="welcome-copy">
+			<p class="eyebrow">Client Home</p>
+			<h1 class="hero-title">Good 
+				<span class="brand">&lt;time_of_day_wording&gt; 
+					<span style="color:#ff33cc;">&lt;first_name&gt;</span></span></h1>
+			<p class="hero-subtitle">Your planning hub is ready. Start with the walkthrough, then jump into the next action you need most.</p>
+			<div class="hero-meta">
+				<span class="hero-chip">
+					<span class="hero-chip-label">Focus</span> 
+					<span class="hero-chip-value">Work on Your Planning Forms, Music, & Timeline!</span> </span></div>
+			<div class="hero-actions">
+				<a class="btn" href="https://drive.google.com/drive/folders/1iAAe1EkLSNogx3CKm9FwxQ8Kukx7nLto?usp=drive_link">
+					<span class="dot">+</span> 
+					<span class="label">Upload Files</span> </a> 
+				<a class="btn" href="https://calendly.com/thetonypre/meetme"> 
+					<span class="dot">+</span> 
+					<span class="label">Schedule a Meeting</span> </a></div></div>
+		<div class="video-panel">
+			<div class="video-wrap">
+				<div class="video-placeholder">
+					<div class="video-placeholder-inner">
+						<span class="video-placeholder-badge">Video Placeholder</span>
+						<p class="video-placeholder-title">Portal Walkthrough</p>
+						<p class="video-placeholder-text">Replace this block with your own intro video, hosted embed, or screenshot preview.</p></div></div></div>
+			<p class="video-note" style="text-align: center;">WALK THROUGH VIDEO COMING SOON!</p></div></div></div>
