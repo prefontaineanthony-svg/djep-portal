@@ -192,10 +192,16 @@
     // "What's next" roadmap. days = how many days BEFORE the event.
     // PLACEHOLDER TIMING: Tony will send the real schedule.
     roadmap: [
-      { days: 180, title: "Creative meeting", detail: "We talk through the vibe, your must-plays and the flow of the night." },
-      { days: 60, title: "Planning form", detail: "Fill in names, key moments and music for each part of the night." },
-      { lock: true, title: "Planning forms lock", detail: "Last day to make changes in the portal." },
-      { days: 3, title: "Final check-in", detail: "I review every detail with you so you can relax." },
+      // Matches Tony's scheduled email series (DJEP email templates 6-17).
+      { days: 274, title: "Start your soundtrack", detail: "Build a few shared Spotify playlists for cocktail hour, dinner, special moments and the dance floor." },
+      { days: 183, title: "Dream up the vibe", detail: "Think about the energy you want, the throwbacks, traditions and moments that feel like you." },
+      { days: 122, title: "Creative meeting", detail: "We map out your music, reception flow, special moments and formalities together." },
+      { days: 90, title: "Fill in your planner", detail: "Start adding music, names, pronunciations, formalities and timeline details." },
+      { days: 60, title: "Final payment due", detail: "Your remaining balance is due. You can pay anytime right here in the portal." },
+      { days: 45, title: "Lock in the music", detail: "Must-plays, do-not-plays and special songs, plus we schedule your Final Planning Meeting." },
+      { days: 30, title: "Services deadline", detail: "Last day to add enhancements. Your planner should be close to complete." },
+      { days: 14, title: "Final details", detail: "One more look at names, speeches, dances and timeline so everything is current." },
+      { lock: true, title: "Planning forms lock", detail: "Last day to make changes in the portal. I'll call you this week for a final check-in." },
       { days: 0, title: "Event day", detail: "Time to celebrate. I've got the rest." }
     ],
     lockDaysFallback: 7, // matches DJEP Client Lockout (days before event)
@@ -260,6 +266,10 @@
         var d = dm && parseDate(dm[1]);
         if (d && d >= today && (!info.nextDue || d < info.nextDue.date)) info.nextDue = { date: d, amount: am ? num(am[0]) : null };
       });
+      if (!info.nextDue && info.date && info.balance > 0.004) {
+        var due60 = addDays(info.date, -60);
+        if (due60 >= today) info.nextDue = { date: due60, amount: info.balance };
+      }
       return info;
     });
   }
