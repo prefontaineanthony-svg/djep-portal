@@ -17931,3 +17931,252 @@ body.djep-planpage-ready .djep-plan-access-icon {
   color: #fff !important;
   font-weight: 800 !important;
 }
+
+/* ============================================================================
+   TP EXTRAS: countdown + planning progress (markup from djep-extras.js)
+   ============================================================================ */
+.tp-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 10px 16px 10px 12px;
+  border: 1px solid rgba(217, 8, 152, 0.38);
+  border-radius: 16px;
+  background:
+    radial-gradient(160px 60px at 0% 50%, rgba(217, 8, 152, 0.22), transparent 70%),
+    rgba(255, 255, 255, 0.03);
+  box-shadow: 0 10px 26px rgba(217, 8, 152, 0.14);
+}
+
+.tp-countdown__num {
+  font-family: var(--djep-font-family);
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #fff;
+  text-shadow: 0 0 16px rgba(217, 8, 152, 0.6), 0 0 36px rgba(217, 8, 152, 0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+.tp-countdown__copy {
+  display: grid;
+  gap: 2px;
+}
+
+.tp-countdown__label {
+  color: var(--tp-pink-2);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.tp-countdown__sub {
+  color: var(--tp-champagne);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tp-countdown--compact {
+  margin-top: 12px;
+  padding: 8px 14px 8px 10px;
+}
+
+.tp-countdown--compact .tp-countdown__num {
+  font-size: 1.5rem;
+}
+
+.tp-lockline {
+  margin: 6px 0 0 !important;
+  color: var(--tp-champagne) !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+}
+
+.tp-progress-holder {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.tp-progress {
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background:
+    radial-gradient(420px 160px at 100% 0%, rgba(122, 44, 255, 0.14), transparent 70%),
+    linear-gradient(180deg, #170e1e 0%, #120a17 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.tp-progress--loading {
+  opacity: 0.7;
+}
+
+.tp-progress__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tp-progress__kicker {
+  margin: 0 0 4px !important;
+  color: var(--tp-champagne) !important;
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+}
+
+.tp-progress__title {
+  margin: 0 !important;
+  color: #fff !important;
+  font-family: var(--djep-font-family) !important;
+  font-size: 1.3rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.01em !important;
+  text-transform: none !important;
+}
+
+.tp-progress__count {
+  color: var(--tp-pink-2);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tp-progress__bar {
+  height: 6px;
+  margin: 14px 0 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.tp-progress__bar > span {
+  display: block;
+  height: 100%;
+  min-width: 6px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #d90898, #7a2cff);
+  box-shadow: 0 0 14px rgba(217, 8, 152, 0.6);
+  transition: width 0.6s ease;
+}
+
+.tp-progress__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tp-progress__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--djep-text) !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+.tp-progress__item:hover {
+  border-color: rgba(217, 8, 152, 0.5);
+  background: rgba(217, 8, 152, 0.08);
+  transform: translateY(-1px);
+}
+
+.tp-progress__dot {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.tp-progress__item--go .tp-progress__dot {
+  border-color: var(--tp-pink);
+  color: var(--tp-pink-2);
+  box-shadow: 0 0 12px rgba(217, 8, 152, 0.35);
+}
+
+.tp-progress__item--done .tp-progress__dot {
+  border-color: transparent;
+  background: linear-gradient(135deg, #d90898, #7a2cff);
+  box-shadow: 0 0 14px rgba(217, 8, 152, 0.5);
+}
+
+.tp-progress__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tp-progress__name {
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.tp-progress__detail {
+  color: var(--djep-text-muted);
+  font-size: 0.8rem;
+}
+
+.tp-progress__status {
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c9bcd2;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tp-progress__item--go .tp-progress__status {
+  border-color: rgba(217, 8, 152, 0.45);
+  color: var(--tp-pink-2);
+}
+
+.tp-progress__item--done .tp-progress__status {
+  border-color: rgba(62, 213, 152, 0.4);
+  color: #8ef0c4;
+}
+
+@media (max-width: 767px) {
+  .tp-progress {
+    padding: 16px;
+  }
+
+  .tp-progress__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-countdown__num {
+    font-size: 1.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tp-progress__bar > span,
+  .tp-progress__item {
+    transition: none;
+  }
+}
