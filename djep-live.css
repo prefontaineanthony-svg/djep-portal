@@ -17895,3 +17895,10 @@ body.djep-planpage-ready .djep-plan-access-icon {
     height: 22px !important;
   }
 }
+
+/* Grid questions use the old HTML border attribute (light gray lines) */
+#djep-content table[border] td,
+#djep-content table[border] th,
+#djep-content table[border] {
+  border-color: #33243d !important;
+}
