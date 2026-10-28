@@ -1,0 +1,119 @@
+
+/* ============================================================================
+   EVENT DETAILS: CONDENSED LAYOUT (2026-10-28)
+   Tighter panels, staffing + request changes side by side, compact rows.
+   ============================================================================ */
+#page_eventdetails .djep-eventdetails-overview-layout,
+#page_eventdetails .djep-card-documents,
+#page_eventdetails .djep-eventdetails-financial-layout {
+  padding: 46px 22px 20px !important;
+}
+#page_eventdetails .djep-eventdetails-overview-layout::before,
+#page_eventdetails .djep-card-documents::before,
+#page_eventdetails .djep-eventdetails-financial-layout::before {
+  top: 18px !important;
+  left: 22px !important;
+}
+#page_eventdetails .djep-eventdetails-column { row-gap: 16px !important; }
+#page_eventdetails > .djep-eventdetails-workspace { column-gap: 16px !important; }
+
+/* Details: date + venue */
+#page_eventdetails .djep-eventdetails-overview-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  column-gap: 16px !important;
+  row-gap: 14px !important;
+  align-items: stretch !important;
+}
+#page_eventdetails .djep-eventdetails-snapshot-card {
+  grid-column: 1 / -1 !important;
+  gap: 18px !important;
+}
+#page_eventdetails .djep-eventdetails-snapshot-card .djep-titlebarsmall {
+  padding-bottom: 6px !important;
+  margin-bottom: 4px !important;
+}
+#page_eventdetails .djep-eventdetails-card-date td { padding: 5px 0 !important; }
+#page_eventdetails .djep-venue-stack { gap: 1px !important; padding: 0 !important; }
+#page_eventdetails .djep-venue-stack > * { font-size: 13.5px !important; line-height: 1.45 !important; }
+#page_eventdetails .djep-venue-stack > *:first-child { font-size: 15px !important; margin-bottom: 2px !important; }
+
+/* Staffing + Request Changes: two compact tiles side by side */
+#page_eventdetails .djep-card-staff,
+#page_eventdetails .djep-card-action {
+  grid-column: auto !important;
+  margin: 0 !important;
+  padding: 14px 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+#page_eventdetails .djep-card-staff > .djep-titlebarsmall,
+#page_eventdetails .djep-card-action > .djep-titlebar {
+  font-size: 0.72rem !important;
+  letter-spacing: 0.14em !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  color: var(--tp-champagne, #e8d3b0) !important;
+}
+#page_eventdetails .djep-staff-list { display: grid !important; gap: 8px !important; margin: 0 !important; }
+#page_eventdetails .djep-staff-member {
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  gap: 10px !important;
+  width: auto !important;
+}
+#page_eventdetails .djep-card-action .djep_innerboxtext {
+  width: 100% !important;
+  max-width: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  flex: 1 !important;
+}
+#page_eventdetails .djep-card-action .djep_innerboxtext > p { margin: 0 !important; font-size: 13.5px !important; line-height: 1.45 !important; }
+#page_eventdetails .djep-card-action .djep-actionbuttonparagraph { text-align: left !important; margin-top: auto !important; }
+#page_eventdetails .djep-card-action .djep-actionbutton {
+  padding: 9px 18px !important;
+  min-height: 0 !important;
+  font-size: 13px !important;
+}
+
+/* Documents: slimmer rows */
+#page_eventdetails .djep-card-documents table tr { padding: 8px 8px 8px 14px !important; }
+#page_eventdetails .djep-card-documents table tbody { gap: 8px !important; row-gap: 8px !important; }
+#page_eventdetails .djep-card-documents .djep-readviewbutton { padding: 6px 16px !important; min-height: 0 !important; font-size: 12.5px !important; }
+
+/* Financials: tighter rows and sections */
+#page_eventdetails .djep-eventdetails-financial-layout { gap: 12px !important; }
+#page_eventdetails .djep-eventdetails-financial-main { gap: 12px !important; row-gap: 12px !important; }
+#page_eventdetails .djep-card-pricing td,
+#page_eventdetails .djep-card-totals td { padding-top: 6px !important; padding-bottom: 6px !important; }
+#page_eventdetails .djep-card-pricing .djep-fee-section-row td { padding-top: 10px !important; padding-bottom: 2px !important; }
+#page_eventdetails .djep-card-pricing tr:first-child td { padding-top: 0 !important; }
+#page_eventdetails .djep-card-totals > .djep-titlebarsmall { padding-bottom: 6px !important; margin-bottom: 2px !important; }
+
+/* Payments card: slimmer */
+#page_eventdetails .tp-slot--details .tp-card { padding: 16px 20px !important; }
+#page_eventdetails .tp-slot--details .tp-pay__body { grid-template-columns: 80px minmax(0, 1fr) !important; gap: 16px !important; align-items: center !important; }
+#page_eventdetails .tp-slot--details .tp-pay__ring { width: 80px !important; height: 80px !important; }
+#page_eventdetails .tp-slot--details .tp-pay__pct { width: 80px !important; height: 80px !important; font-size: 1.25rem !important; }
+
+/* Phones: stack the tiles, keep the tight spacing */
+@media (max-width: 767px) {
+  #page_eventdetails .djep-eventdetails-overview-layout { grid-template-columns: minmax(0, 1fr) !important; }
+  #page_eventdetails .djep-eventdetails-overview-layout,
+  #page_eventdetails .djep-card-documents,
+  #page_eventdetails .djep-eventdetails-financial-layout { padding: 42px 16px 16px !important; }
+  #page_eventdetails .djep-eventdetails-overview-layout::before,
+  #page_eventdetails .djep-card-documents::before,
+  #page_eventdetails .djep-eventdetails-financial-layout::before { left: 16px !important; top: 16px !important; }
+  #page_eventdetails .djep-card-action .djep-actionbutton { width: 100% !important; justify-content: center !important; min-height: 44px !important; }
+}
