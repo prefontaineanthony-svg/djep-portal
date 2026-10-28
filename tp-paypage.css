@@ -141,3 +141,15 @@
   .tp-paypage .tp-card { padding: 18px 16px; }
   .tp-paysum__total { font-size: 2.2rem; }
 }
+
+/* shared row pieces (also defined for Home; repeated so this page stands alone) */
+.tp-paypage .tp-keys__tile { flex: none; display: grid; justify-items: center; width: 44px; padding: 5px 0; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; background: #0d0811; }
+.tp-paypage .tp-keys__tile small { color: #ff4fbf; font-size: 0.56rem; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; text-align: center !important; }
+.tp-paypage .tp-keys__tile b { color: #fff; font-size: 1.05rem; font-weight: 900; line-height: 1.1; text-align: center !important; }
+.tp-paypage .tp-keys__copy { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.tp-paypage .tp-keys__copy b { color: #fff; font-size: 0.9rem; }
+.tp-paypage .tp-keys__copy small { color: #9a8f9f; font-size: 0.76rem; }
+.tp-paypage .tp-ico { width: 18px; height: 18px; flex: none; }
+.tp-paysum__label { font-size: 0.7rem !important; }
+.tp-paysum__total { margin: 6px 0 14px; color: #fff; font-size: 2.6rem !important; font-weight: 900; line-height: 1 !important; }
+@media (max-width: 767px) { .tp-paysum__total { font-size: 2.2rem !important; } }

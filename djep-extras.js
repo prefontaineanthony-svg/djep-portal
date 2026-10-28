@@ -887,8 +887,8 @@
       '<div class="tp-paypage__top">' +
         // summary
         '<section class="tp-card tp-paysum">' +
-          '<p class="tp-paysum__label">Total for your night</p>' +
-          '<p class="tp-paysum__total">' + money(total) + '</p>' +
+          '<div class="tp-paysum__label">Total for your night</div>' +
+          '<div class="tp-paysum__total">' + money(total) + '</div>' +
           '<div class="tp-paysum__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><span style="width:' + pct + '%"></span></div>' +
           '<div class="tp-paysum__split"><span><b>' + money(paid) + '</b> paid</span><span><b>' + money(balance) + '</b> remaining</span></div>' +
           (full
