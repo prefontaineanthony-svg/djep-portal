@@ -430,11 +430,11 @@
     var ev = info.date, out = [];
     var portal = "https://thedjforms.com/clientlogon.asp?djidnumber=28795";
     var full = isPaidFull(info);
-    out.push({ key: "creative", date: addDays(ev, -122), title: "Schedule your creative meeting with Tony Pre",
+    out.push({ key: "creative", date: addDays(ev, -129), title: "Schedule your creative meeting with Tony Pre",
       desc: "Time to book your creative meeting. We'll map out your music, reception flow, special moments and formalities.\nBook here: " + TP.dj.meeting + "\nYour portal: " + portal });
     if (!full) out.push({ key: "payment", date: addDays(ev, -TP.finalPaymentDays), title: "Final payment due (Tony Pre)",
       desc: "Your remaining balance" + (info.balance > 0 ? " of " + money(info.balance) : "") + " is due today. Pay anytime in your portal: " + portal });
-    out.push({ key: "final", date: addDays(ev, -45), title: "Schedule your final planning meeting with Tony Pre",
+    out.push({ key: "final", date: addDays(ev, -52), title: "Schedule your final planning meeting with Tony Pre",
       desc: "Time to book your final planning meeting. We'll lock in every detail, A to Z.\nBook here: " + TP.dj.meeting + "\nYour portal: " + portal });
     out.push({ key: "addons", date: addDays(ev, -TP.addonDeadlineDays), title: "Add-on deadline (Tony Pre)",
       desc: "Last day to add enhancements like uplighting, sparklers or a photo booth. See them all on your portal home page: " + portal });
@@ -751,9 +751,9 @@
     if (!full && info.nextDue && Math.abs(info.nextDue.date - finalDue) > DAY) {
       rows.push({ title: "Next payment", sub: (info.nextDue.amount ? money(info.nextDue.amount) + " " : "") + "due", date: info.nextDue.date });
     }
-    rows.push({ title: "Creative meeting", sub: "Music, flow and special moments, about 4 months out", date: addDays(ev, -122) });
+    rows.push({ title: "Schedule creative meeting", sub: "Book a week ahead to meet about 4 months out", date: addDays(ev, -129) });
     rows.push({ title: "Final payment due", sub: full ? "Paid in full. Thank you!" : "Remaining balance, 60 days out", date: finalDue, paid: full });
-    rows.push({ title: "Final planning meeting", sub: "We lock in every detail, about 6 weeks out", date: addDays(ev, -45) });
+    rows.push({ title: "Schedule final planning meeting", sub: "Book a week ahead to meet about 6 weeks out", date: addDays(ev, -52) });
     rows.push({ title: "Add-on deadline", sub: "Last day to add enhancements", date: addDays(ev, -TP.addonDeadlineDays) });
     if (lock) rows.push({ title: "Planning forms lock", sub: "Last day to make changes in the portal", date: lock });
     rows.push({ title: /wedding/i.test(info.type || "") ? "Wedding day" : "Event day", sub: "Let's dance.", date: ev, hot: true });
